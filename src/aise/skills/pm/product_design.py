@@ -20,12 +20,10 @@ class ProductDesignSkill(Skill):
         return "Create a PRD with feature specifications, user flows, and priority rankings"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        reqs = context.artifact_store.get_latest(ArtifactType.REQUIREMENTS)
-        stories = context.artifact_store.get_latest(ArtifactType.USER_STORIES)
-
-        functional_reqs = reqs.content.get("functional_requirements", []) if reqs else []
-        non_functional_reqs = reqs.content.get("non_functional_requirements", []) if reqs else []
-        user_stories = stories.content.get("user_stories", []) if stories else []
+        store = context.artifact_store
+        functional_reqs = store.get_content(ArtifactType.REQUIREMENTS, "functional_requirements", [])
+        non_functional_reqs = store.get_content(ArtifactType.REQUIREMENTS, "non_functional_requirements", [])
+        user_stories = store.get_content(ArtifactType.USER_STORIES, "user_stories", [])
 
         # Build feature list from requirements
         features = []

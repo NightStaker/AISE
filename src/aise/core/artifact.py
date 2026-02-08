@@ -68,12 +68,12 @@ class ArtifactStore:
 
     def __init__(self) -> None:
         self._artifacts: dict[str, Artifact] = {}
-        self._by_type: dict[ArtifactType, list[str]] = {}
+        self._by_type: dict[ArtifactType, list[Artifact]] = {}
 
     def store(self, artifact: Artifact) -> str:
         """Store an artifact and return its ID."""
         self._artifacts[artifact.id] = artifact
-        self._by_type.setdefault(artifact.artifact_type, []).append(artifact.id)
+        self._by_type.setdefault(artifact.artifact_type, []).append(artifact)
         return artifact.id
 
     def get(self, artifact_id: str) -> Artifact | None:
@@ -82,14 +82,29 @@ class ArtifactStore:
 
     def get_by_type(self, artifact_type: ArtifactType) -> list[Artifact]:
         """Get all artifacts of a given type, newest first."""
-        ids = self._by_type.get(artifact_type, [])
-        artifacts = [self._artifacts[aid] for aid in ids if aid in self._artifacts]
+        artifacts = self._by_type.get(artifact_type, [])
         return sorted(artifacts, key=lambda a: a.version, reverse=True)
 
     def get_latest(self, artifact_type: ArtifactType) -> Artifact | None:
         """Get the latest version of an artifact type."""
-        artifacts = self.get_by_type(artifact_type)
-        return artifacts[0] if artifacts else None
+        artifacts = self._by_type.get(artifact_type)
+        if not artifacts:
+            return None
+        return max(artifacts, key=lambda a: a.version)
+
+    def get_content(
+        self, artifact_type: ArtifactType, key: str, default: Any = None
+    ) -> Any:
+        """Get a content field from the latest artifact of a given type.
+
+        Shorthand for the common pattern:
+            artifact = store.get_latest(Type)
+            value = artifact.content.get(key, default) if artifact else default
+        """
+        artifact = self.get_latest(artifact_type)
+        if artifact is None:
+            return default
+        return artifact.content.get(key, default)
 
     def all(self) -> list[Artifact]:
         """Return all stored artifacts."""

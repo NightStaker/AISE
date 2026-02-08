@@ -20,11 +20,9 @@ class TechStackSelectionSkill(Skill):
         return "Select and justify technology stack based on project requirements"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        reqs = context.artifact_store.get_latest(ArtifactType.REQUIREMENTS)
-        arch = context.artifact_store.get_latest(ArtifactType.ARCHITECTURE_DESIGN)
-
-        non_functional = reqs.content.get("non_functional_requirements", []) if reqs else []
-        arch_style = arch.content.get("architecture_style", "monolith") if arch else "monolith"
+        store = context.artifact_store
+        non_functional = store.get_content(ArtifactType.REQUIREMENTS, "non_functional_requirements", [])
+        arch_style = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "architecture_style", "monolith")
 
         nfr_text = " ".join(nfr.get("description", "").lower() for nfr in non_functional)
 

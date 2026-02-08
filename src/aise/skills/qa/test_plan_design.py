@@ -20,14 +20,10 @@ class TestPlanDesignSkill(Skill):
         return "Design comprehensive test plans with scope, strategy, and risk analysis"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        reqs = context.artifact_store.get_latest(ArtifactType.REQUIREMENTS)
-        arch = context.artifact_store.get_latest(ArtifactType.ARCHITECTURE_DESIGN)
-        code = context.artifact_store.get_latest(ArtifactType.SOURCE_CODE)
-        api = context.artifact_store.get_latest(ArtifactType.API_CONTRACT)
-
-        components = arch.content.get("components", []) if arch else []
+        store = context.artifact_store
+        components = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
         service_components = [c for c in components if c["type"] == "service"]
-        endpoints = api.content.get("endpoints", []) if api else []
+        endpoints = store.get_content(ArtifactType.API_CONTRACT, "endpoints", [])
 
         # Test scope
         scope = {
