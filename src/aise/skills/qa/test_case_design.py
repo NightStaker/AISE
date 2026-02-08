@@ -20,12 +20,9 @@ class TestCaseDesignSkill(Skill):
         return "Design detailed integration, E2E, and regression test cases"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        api = context.artifact_store.get_latest(ArtifactType.API_CONTRACT)
-        arch = context.artifact_store.get_latest(ArtifactType.ARCHITECTURE_DESIGN)
-        plan = context.artifact_store.get_latest(ArtifactType.TEST_PLAN)
-
-        endpoints = api.content.get("endpoints", []) if api else []
-        components = arch.content.get("components", []) if arch else []
+        store = context.artifact_store
+        endpoints = store.get_content(ArtifactType.API_CONTRACT, "endpoints", [])
+        components = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
         service_components = [c for c in components if c["type"] == "service"]
 
         test_cases = []

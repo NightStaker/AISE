@@ -20,8 +20,7 @@ class APIDesignSkill(Skill):
         return "Design API contracts (endpoints, request/response schemas, error codes)"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        arch = context.artifact_store.get_latest(ArtifactType.ARCHITECTURE_DESIGN)
-        components = arch.content.get("components", []) if arch else []
+        components = context.artifact_store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
 
         endpoints = []
         schemas = {}

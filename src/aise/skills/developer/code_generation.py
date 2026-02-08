@@ -20,14 +20,12 @@ class CodeGenerationSkill(Skill):
         return "Generate source code from architecture design and API contracts"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        arch = context.artifact_store.get_latest(ArtifactType.ARCHITECTURE_DESIGN)
-        api = context.artifact_store.get_latest(ArtifactType.API_CONTRACT)
-        tech = context.artifact_store.get_latest(ArtifactType.TECH_STACK)
-
-        components = arch.content.get("components", []) if arch else []
-        endpoints = api.content.get("endpoints", []) if api else []
-        language = tech.content.get("backend", {}).get("language", "Python") if tech else "Python"
-        framework = tech.content.get("backend", {}).get("framework", "FastAPI") if tech else "FastAPI"
+        store = context.artifact_store
+        components = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
+        endpoints = store.get_content(ArtifactType.API_CONTRACT, "endpoints", [])
+        backend = store.get_content(ArtifactType.TECH_STACK, "backend", {})
+        language = backend.get("language", "Python")
+        framework = backend.get("framework", "FastAPI")
 
         modules = []
 

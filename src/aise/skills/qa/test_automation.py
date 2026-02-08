@@ -20,11 +20,10 @@ class TestAutomationSkill(Skill):
         return "Generate automated test scripts from test case designs"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        test_cases = context.artifact_store.get_latest(ArtifactType.TEST_CASES)
-        tech = context.artifact_store.get_latest(ArtifactType.TECH_STACK)
-
-        cases = test_cases.content.get("test_cases", []) if test_cases else []
-        framework = tech.content.get("testing", {}).get("integration", "pytest") if tech else "pytest"
+        store = context.artifact_store
+        cases = store.get_content(ArtifactType.TEST_CASES, "test_cases", [])
+        testing = store.get_content(ArtifactType.TECH_STACK, "testing", {})
+        framework = testing.get("integration", "pytest")
 
         test_files = {}
 

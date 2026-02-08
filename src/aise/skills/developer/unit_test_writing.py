@@ -20,9 +20,9 @@ class UnitTestWritingSkill(Skill):
         return "Generate unit tests for source code modules with edge-case coverage"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        code = context.artifact_store.get_latest(ArtifactType.SOURCE_CODE)
-        modules = code.content.get("modules", []) if code else []
-        language = code.content.get("language", "Python") if code else "Python"
+        store = context.artifact_store
+        modules = store.get_content(ArtifactType.SOURCE_CODE, "modules", [])
+        language = store.get_content(ArtifactType.SOURCE_CODE, "language", "Python")
 
         test_suites = []
 

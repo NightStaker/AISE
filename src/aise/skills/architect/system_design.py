@@ -20,13 +20,9 @@ class SystemDesignSkill(Skill):
         return "Design high-level system architecture from requirements and PRD"
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
-        reqs = context.artifact_store.get_latest(ArtifactType.REQUIREMENTS)
-        prd = context.artifact_store.get_latest(ArtifactType.PRD)
-
-        features = prd.content.get("features", []) if prd else []
-        non_functional = (
-            reqs.content.get("non_functional_requirements", []) if reqs else []
-        )
+        store = context.artifact_store
+        features = store.get_content(ArtifactType.PRD, "features", [])
+        non_functional = store.get_content(ArtifactType.REQUIREMENTS, "non_functional_requirements", [])
 
         # Derive components from features
         components = []
