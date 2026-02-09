@@ -35,6 +35,69 @@ AISE orchestrates five specialized agents, each with distinct skills, through a 
         ArtifactStore  WorkflowEngine
 ```
 
+## Features
+
+### WhatsApp Group Chat Integration
+
+Form a WhatsApp group where agents collaborate in real time. Human owners can join the group and send requirements directly in chat. Includes a bidirectional bridge between the internal MessageBus and WhatsApp, a webhook server for the WhatsApp Business API, and a local CLI simulation mode for testing without credentials.
+
+```bash
+# Start a WhatsApp group session (simulation mode)
+aise whatsapp --project-name "UserAPI" --owner "Alice"
+
+# Start with real WhatsApp Business API
+aise whatsapp --project-name "UserAPI" --owner "Alice" \
+  --phone "+1234567890" --webhook --webhook-port 8080
+```
+
+### On-Demand Interactive Mode
+
+A REPL-style CLI interface that keeps the agent team alive for ad-hoc commands. Add requirements, report bugs, inspect artifacts, run individual phases, or trigger the full workflow — all within a single interactive session.
+
+```bash
+aise demand --project-name "UserAPI"
+```
+
+Available commands inside the session:
+
+| Command | Description |
+|---------|-------------|
+| `add <requirement>` | Add and analyze a new requirement |
+| `bug <description>` | Report a bug for the developer to fix |
+| `status` | Show project and team status |
+| `artifacts [type]` | List produced artifacts |
+| `phase <name>` | Run a specific workflow phase |
+| `workflow` | Run the full SDLC workflow |
+| `ask <question>` | Ask the Team Lead to decompose a request |
+| `help` | Show available commands |
+| `quit` | End the session |
+
+### Per-Agent Configurable LLM Models
+
+Each agent can use a different LLM provider and model. The configuration supports a fallback chain: agent-specific settings take priority, then project defaults, then hardcoded defaults.
+
+```python
+from aise.config import ProjectConfig, ModelConfig
+
+config = ProjectConfig(
+    project_name="UserAPI",
+    default_model=ModelConfig(provider="anthropic", model="claude-opus-4")
+)
+config.agents["developer"].model = ModelConfig(
+    provider="openai", model="gpt-4o"
+)
+```
+
+Supported providers include OpenAI, Anthropic, Ollama, and any OpenAI-compatible API.
+
+### CI/CD Pipeline
+
+GitHub Actions workflow that runs on every pull request and push to `main`:
+
+- **Lint** — Ruff check and format validation
+- **Test** — Pytest across Python 3.11 and 3.12
+- **Build** — Package building and verification
+
 ## Agents & Skills
 
 | Agent | Role | Skills |
@@ -68,6 +131,9 @@ cd AISE
 
 # Install in development mode
 pip install -e .
+
+# Install with development dependencies (pytest, ruff)
+pip install -e ".[dev]"
 ```
 
 ## Usage
@@ -82,6 +148,18 @@ aise run --requirements "Build a REST API for user management" --project-name "U
 
 ```bash
 aise run --requirements "requirements text" --project-name "MyProject" --output results.json
+```
+
+### Start an interactive session
+
+```bash
+aise demand --project-name "MyProject"
+```
+
+### Start a WhatsApp group session
+
+```bash
+aise whatsapp --project-name "MyProject" --owner "Alice"
 ```
 
 ### View team information
@@ -100,17 +178,25 @@ src/aise/
 ├── core/
 │   ├── agent.py         # Base Agent class & AgentRole enum
 │   ├── artifact.py      # Artifact & ArtifactStore models
+│   ├── llm.py           # LLMClient abstraction
 │   ├── message.py       # Message, MessageBus, MessageType
-│   ├── skill.py         # Skill base class & SkillContext
 │   ├── orchestrator.py  # Workflow coordinator
+│   ├── session.py       # OnDemandSession (interactive mode)
+│   ├── skill.py         # Skill base class & SkillContext
 │   └── workflow.py      # Workflow engine, Phase & Task models
 ├── agents/              # 5 agent implementations
-└── skills/              # 20 skill implementations (4 per agent)
-    ├── pm/
-    ├── architect/
-    ├── developer/
-    ├── qa/
-    └── lead/
+├── skills/              # 20 skill implementations (4 per agent)
+│   ├── pm/
+│   ├── architect/
+│   ├── developer/
+│   ├── qa/
+│   └── lead/
+└── whatsapp/            # WhatsApp group chat integration
+    ├── client.py        # WhatsApp Business Cloud API client
+    ├── group.py         # Group chat model & member management
+    ├── bridge.py        # MessageBus ↔ WhatsApp bridge
+    ├── webhook.py       # Webhook server for incoming messages
+    └── session.py       # WhatsApp group session orchestrator
 ```
 
 ## Testing
@@ -124,6 +210,13 @@ pytest tests/test_core/
 
 # Run agent tests
 pytest tests/test_agents/
+
+# Run WhatsApp integration tests
+pytest tests/test_whatsapp/
+
+# Lint and format check
+ruff check src/ tests/
+ruff format --check src/ tests/
 ```
 
 ## Key Concepts
@@ -133,6 +226,7 @@ pytest tests/test_agents/
 - **Review Gates** — Quality checkpoints between workflow phases with configurable retry limits
 - **Stateless Skills** — Each skill is a pure function of input artifacts and context, producing output artifacts
 - **Declarative Workflows** — Pipeline phases defined as data structures with dependency tracking
+- **LLM Abstraction** — Provider-agnostic model access allowing heterogeneous agent configurations
 
 ## License
 
