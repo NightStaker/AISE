@@ -79,11 +79,7 @@ class MessageBus:
         """Get message history, optionally filtered by agent."""
         if agent_name is None:
             return list(self._history)
-        return [
-            m
-            for m in self._history
-            if m.sender == agent_name or m.receiver == agent_name
-        ]
+        return [m for m in self._history if m.sender == agent_name or m.receiver == agent_name]
 
     def clear_history(self) -> None:
         """Clear all message history."""

@@ -37,8 +37,10 @@ class ProgressTrackingSkill(Skill):
             },
             "complete": all(
                 self._artifact_status(a) in ("approved", "draft", "revised")
-                for a in [reqs, stories, prd] if a is not None
-            ) and reqs is not None,
+                for a in [reqs, stories, prd]
+                if a is not None
+            )
+            and reqs is not None,
         }
 
         # Design phase
@@ -52,9 +54,9 @@ class ProgressTrackingSkill(Skill):
                 "tech_stack": self._artifact_status(tech),
             },
             "complete": all(
-                self._artifact_status(a) in ("approved", "draft", "revised")
-                for a in [arch, api, tech] if a is not None
-            ) and arch is not None,
+                self._artifact_status(a) in ("approved", "draft", "revised") for a in [arch, api, tech] if a is not None
+            )
+            and arch is not None,
         }
 
         # Implementation phase
@@ -78,9 +80,7 @@ class ProgressTrackingSkill(Skill):
                 "test_cases": self._artifact_status(test_cases),
                 "automated_tests": self._artifact_status(auto_tests),
             },
-            "complete": all(
-                a is not None for a in [test_plan, test_cases, auto_tests]
-            ),
+            "complete": all(a is not None for a in [test_plan, test_cases, auto_tests]),
         }
 
         # Overall progress

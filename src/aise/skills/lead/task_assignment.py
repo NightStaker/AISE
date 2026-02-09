@@ -7,7 +7,6 @@ from typing import Any
 from ...core.artifact import Artifact, ArtifactType
 from ...core.skill import Skill, SkillContext
 
-
 # Mapping of skills to agent roles
 SKILL_TO_AGENT = {
     "requirement_analysis": "product_manager",
@@ -48,15 +47,17 @@ class TaskAssignmentSkill(Skill):
             skill = task.get("skill", "")
             agent = task.get("agent") or SKILL_TO_AGENT.get(skill, "team_lead")
 
-            assignments.append({
-                "task_id": task.get("id", "unknown"),
-                "skill": skill,
-                "assigned_to": agent,
-                "phase": task.get("phase", "unknown"),
-                "description": task.get("description", ""),
-                "dependencies": task.get("dependencies", []),
-                "status": "assigned",
-            })
+            assignments.append(
+                {
+                    "task_id": task.get("id", "unknown"),
+                    "skill": skill,
+                    "assigned_to": agent,
+                    "phase": task.get("phase", "unknown"),
+                    "description": task.get("description", ""),
+                    "dependencies": task.get("dependencies", []),
+                    "status": "assigned",
+                }
+            )
 
         # Group by agent
         by_agent = {}

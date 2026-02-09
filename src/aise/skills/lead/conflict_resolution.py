@@ -38,8 +38,7 @@ class ConflictResolutionSkill(Skill):
             nfr_text = ""
             if reqs:
                 nfr_text = " ".join(
-                    r.get("description", "").lower()
-                    for r in reqs.content.get("non_functional_requirements", [])
+                    r.get("description", "").lower() for r in reqs.content.get("non_functional_requirements", [])
                 )
 
             chosen_option = options[0] if options else "defer to architect"
@@ -59,13 +58,15 @@ class ConflictResolutionSkill(Skill):
                         rationale = "Selected for security alignment with NFRs"
                         break
 
-            resolutions.append({
-                "issue": issue,
-                "parties": parties,
-                "decision": chosen_option,
-                "rationale": rationale,
-                "status": "resolved",
-            })
+            resolutions.append(
+                {
+                    "issue": issue,
+                    "parties": parties,
+                    "decision": chosen_option,
+                    "rationale": rationale,
+                    "status": "resolved",
+                }
+            )
 
         return Artifact(
             artifact_type=ArtifactType.REVIEW_FEEDBACK,
@@ -75,5 +76,8 @@ class ConflictResolutionSkill(Skill):
                 "resolved_count": sum(1 for r in resolutions if r["status"] == "resolved"),
             },
             producer="team_lead",
-            metadata={"type": "conflict_resolution", "project_name": context.project_name},
+            metadata={
+                "type": "conflict_resolution",
+                "project_name": context.project_name,
+            },
         )

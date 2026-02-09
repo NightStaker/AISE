@@ -168,7 +168,10 @@ class OnDemandSession:
 
     def _handle_add_requirement(self, text: str) -> dict[str, Any]:
         if not text.strip():
-            return {"status": "error", "output": "Please provide a requirement. Usage: add <requirement text>"}
+            return {
+                "status": "error",
+                "output": "Please provide a requirement. Usage: add <requirement text>",
+            }
 
         try:
             # Run the requirement through the PM agent pipeline
@@ -222,7 +225,10 @@ class OnDemandSession:
 
     def _handle_bug(self, text: str) -> dict[str, Any]:
         if not text.strip():
-            return {"status": "error", "output": "Please describe the bug. Usage: bug <description>"}
+            return {
+                "status": "error",
+                "output": "Please describe the bug. Usage: bug <description>",
+            }
 
         try:
             bug_reports = [{"id": "BUG-USER", "description": text}]
@@ -330,7 +336,10 @@ class OnDemandSession:
 
         if target_phase is None:
             available = ", ".join(p.name for p in workflow.phases)
-            return {"status": "error", "output": f"Unknown phase '{phase_name}'. Available: {available}"}
+            return {
+                "status": "error",
+                "output": f"Unknown phase '{phase_name}'. Available: {available}",
+            }
 
         # Build a single-phase workflow to execute
         from .workflow import Workflow
@@ -363,7 +372,10 @@ class OnDemandSession:
     def _handle_run_workflow(self, text: str) -> dict[str, Any]:
         reqs = self._gather_requirements()
         if not reqs:
-            return {"status": "error", "output": "No requirements found. Add requirements first with: add <text>"}
+            return {
+                "status": "error",
+                "output": "No requirements found. Add requirements first with: add <text>",
+            }
 
         try:
             results = self.orchestrator.run_default_workflow(
@@ -405,7 +417,11 @@ class OnDemandSession:
             if len(tasks) > 10:
                 lines.append(f"  ... and {len(tasks) - 10} more")
 
-            return {"status": "ok", "artifact_id": artifact_id, "output": "\n".join(lines)}
+            return {
+                "status": "ok",
+                "artifact_id": artifact_id,
+                "output": "\n".join(lines),
+            }
 
         except Exception as e:
             return {"status": "error", "output": f"Failed: {e}"}
@@ -439,6 +455,7 @@ class OnDemandSession:
 # ------------------------------------------------------------------
 # Module-level helpers
 # ------------------------------------------------------------------
+
 
 def _make_notification(sender: str, receiver: str, text: str):
     """Create a notification Message without importing at module level."""

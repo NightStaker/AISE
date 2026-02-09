@@ -30,8 +30,18 @@ class TestArtifactStore:
 
     def test_get_by_type(self):
         store = ArtifactStore()
-        a1 = Artifact(artifact_type=ArtifactType.REQUIREMENTS, content={}, producer="pm", version=1)
-        a2 = Artifact(artifact_type=ArtifactType.REQUIREMENTS, content={}, producer="pm", version=2)
+        a1 = Artifact(
+            artifact_type=ArtifactType.REQUIREMENTS,
+            content={},
+            producer="pm",
+            version=1,
+        )
+        a2 = Artifact(
+            artifact_type=ArtifactType.REQUIREMENTS,
+            content={},
+            producer="pm",
+            version=2,
+        )
         store.store(a1)
         store.store(a2)
 

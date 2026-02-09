@@ -38,11 +38,13 @@ class TestAutomationSkill(Skill):
                 }
 
             script = self._generate_test_script(tc, framework)
-            test_files[tc_type]["scripts"].append({
-                "file": file_key,
-                "test_case_id": tc["id"],
-                "content": script,
-            })
+            test_files[tc_type]["scripts"].append(
+                {
+                    "file": file_key,
+                    "test_case_id": tc["id"],
+                    "content": script,
+                }
+            )
 
         # Generate conftest.py
         conftest = self._generate_conftest(framework)

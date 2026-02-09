@@ -1,6 +1,5 @@
 """Tests for the WhatsApp webhook server."""
 
-
 from aise.whatsapp.client import WhatsAppClient, WhatsAppConfig
 from aise.whatsapp.webhook import WebhookServer
 

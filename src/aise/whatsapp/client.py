@@ -158,10 +158,7 @@ class WhatsAppClient:
                 value = change.get("value", {})
                 if "messages" not in value:
                     continue
-                contacts = {
-                    c["wa_id"]: c.get("profile", {}).get("name", c["wa_id"])
-                    for c in value.get("contacts", [])
-                }
+                contacts = {c["wa_id"]: c.get("profile", {}).get("name", c["wa_id"]) for c in value.get("contacts", [])}
                 for msg in value["messages"]:
                     sender_id = msg.get("from", "")
                     extracted = {
@@ -177,10 +174,9 @@ class WhatsAppClient:
                         extracted["body"] = msg.get("text", {}).get("body", "")
                     elif msg.get("type") == "interactive":
                         interactive = msg.get("interactive", {})
-                        extracted["body"] = (
-                            interactive.get("button_reply", {}).get("title", "")
-                            or interactive.get("list_reply", {}).get("title", "")
-                        )
+                        extracted["body"] = interactive.get("button_reply", {}).get("title", "") or interactive.get(
+                            "list_reply", {}
+                        ).get("title", "")
                     messages.append(extracted)
 
                     # Notify registered callbacks

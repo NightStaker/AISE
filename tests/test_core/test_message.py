@@ -5,7 +5,12 @@ from aise.core.message import Message, MessageBus, MessageType
 
 class TestMessage:
     def test_message_creation(self):
-        msg = Message(sender="a", receiver="b", msg_type=MessageType.REQUEST, content={"key": "val"})
+        msg = Message(
+            sender="a",
+            receiver="b",
+            msg_type=MessageType.REQUEST,
+            content={"key": "val"},
+        )
         assert msg.sender == "a"
         assert msg.receiver == "b"
         assert msg.msg_type == MessageType.REQUEST
@@ -33,7 +38,12 @@ class TestMessageBus:
         received = []
         bus.subscribe("agent_b", lambda m: received.append(m))
 
-        msg = Message(sender="agent_a", receiver="agent_b", msg_type=MessageType.REQUEST, content={})
+        msg = Message(
+            sender="agent_a",
+            receiver="agent_b",
+            msg_type=MessageType.REQUEST,
+            content={},
+        )
         bus.publish(msg)
 
         assert len(received) == 1
@@ -46,7 +56,12 @@ class TestMessageBus:
         bus.subscribe("b", lambda m: received_b.append(m))
         bus.subscribe("c", lambda m: received_c.append(m))
 
-        msg = Message(sender="a", receiver="broadcast", msg_type=MessageType.NOTIFICATION, content={})
+        msg = Message(
+            sender="a",
+            receiver="broadcast",
+            msg_type=MessageType.NOTIFICATION,
+            content={},
+        )
         bus.publish(msg)
 
         assert len(received_b) == 1
@@ -57,7 +72,12 @@ class TestMessageBus:
         received = []
         bus.subscribe("a", lambda m: received.append(m))
 
-        msg = Message(sender="a", receiver="broadcast", msg_type=MessageType.NOTIFICATION, content={})
+        msg = Message(
+            sender="a",
+            receiver="broadcast",
+            msg_type=MessageType.NOTIFICATION,
+            content={},
+        )
         bus.publish(msg)
 
         assert len(received) == 0

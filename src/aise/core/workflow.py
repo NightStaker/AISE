@@ -148,9 +148,13 @@ class WorkflowEngine:
 
         gate = phase.review_gate
         try:
-            artifact_id = executor(gate.reviewer_agent, gate.review_skill, {
-                "target_artifact_type": gate.target_artifact_type,
-            })
+            artifact_id = executor(
+                gate.reviewer_agent,
+                gate.review_skill,
+                {
+                    "target_artifact_type": gate.target_artifact_type,
+                },
+            )
             phase.status = PhaseStatus.COMPLETED
             return {"approved": True, "artifact_id": artifact_id}
         except Exception as e:

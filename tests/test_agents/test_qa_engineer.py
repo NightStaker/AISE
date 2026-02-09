@@ -1,11 +1,11 @@
 """Tests for the QA Engineer agent and skills."""
 
-from aise.core.artifact import ArtifactStore
-from aise.core.message import MessageBus
 from aise.agents.architect import ArchitectAgent
 from aise.agents.developer import DeveloperAgent
 from aise.agents.product_manager import ProductManagerAgent
 from aise.agents.qa_engineer import QAEngineerAgent
+from aise.core.artifact import ArtifactStore
+from aise.core.message import MessageBus
 
 
 class TestQAEngineerAgent:
@@ -32,7 +32,12 @@ class TestQAEngineerAgent:
         bus = MessageBus()
         store = ArtifactStore()
         agent = QAEngineerAgent(bus, store)
-        expected = {"test_plan_design", "test_case_design", "test_automation", "test_review"}
+        expected = {
+            "test_plan_design",
+            "test_case_design",
+            "test_automation",
+            "test_review",
+        }
         assert set(agent.skill_names) == expected
 
     def test_test_plan_design(self):

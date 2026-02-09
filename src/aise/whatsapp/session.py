@@ -115,9 +115,7 @@ class WhatsAppGroupSession:
                 message_callback=self.bridge.handle_incoming_whatsapp,
             )
             self._webhook_server.start()
-            self._print(
-                f"Webhook server running on port {self.whatsapp_config.webhook_port}"
-            )
+            self._print(f"Webhook server running on port {self.whatsapp_config.webhook_port}")
 
         # Print group info
         self._print(_WA_BANNER)
@@ -333,9 +331,7 @@ class WhatsAppGroupSession:
     # Callbacks
     # ------------------------------------------------------------------
 
-    def _handle_human_command(
-        self, message: GroupMessage, member: GroupMember
-    ) -> bool:
+    def _handle_human_command(self, message: GroupMessage, member: GroupMember) -> bool:
         """Custom handler for human messages in the bridge.
 
         Returns True if the message was handled as a command,

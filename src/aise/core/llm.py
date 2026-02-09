@@ -44,7 +44,4 @@ class LLMClient:
         return ""
 
     def __repr__(self) -> str:
-        return (
-            f"LLMClient(provider={self.config.provider!r}, "
-            f"model={self.config.model!r})"
-        )
+        return f"LLMClient(provider={self.config.provider!r}, model={self.config.model!r})"

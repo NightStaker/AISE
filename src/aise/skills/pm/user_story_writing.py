@@ -29,7 +29,7 @@ class UserStoryWritingSkill(Skill):
                 "id": f"US-{req['id']}",
                 "title": self._derive_title(req["description"]),
                 "story": f"As a user, I want to {req['description'].lower().rstrip('.')}, "
-                         f"so that I can achieve my goal.",
+                f"so that I can achieve my goal.",
                 "acceptance_criteria": [
                     f"Given the feature is implemented, when {req['description'].lower().rstrip('.')}, "
                     f"then the system responds correctly.",

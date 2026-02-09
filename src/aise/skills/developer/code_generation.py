@@ -35,10 +35,7 @@ class CodeGenerationSkill(Skill):
                 continue
 
             module_name = self._to_module_name(comp["name"])
-            related_endpoints = [
-                ep for ep in endpoints
-                if module_name in ep.get("path", "").lower()
-            ]
+            related_endpoints = [ep for ep in endpoints if module_name in ep.get("path", "").lower()]
 
             module = {
                 "name": module_name,
@@ -50,17 +47,21 @@ class CodeGenerationSkill(Skill):
             modules.append(module)
 
         # Generate main app entry point
-        modules.append({
-            "name": "app",
-            "component_id": "COMP-API",
-            "language": language,
-            "framework": framework,
-            "files": [{
-                "path": f"app/main.{'py' if language == 'Python' else 'go'}",
-                "description": "Application entry point",
-                "content": self._generate_app_entry(modules, language, framework),
-            }],
-        })
+        modules.append(
+            {
+                "name": "app",
+                "component_id": "COMP-API",
+                "language": language,
+                "framework": framework,
+                "files": [
+                    {
+                        "path": f"app/main.{'py' if language == 'Python' else 'go'}",
+                        "description": "Application entry point",
+                        "content": self._generate_app_entry(modules, language, framework),
+                    }
+                ],
+            }
+        )
 
         return Artifact(
             artifact_type=ArtifactType.SOURCE_CODE,
@@ -74,9 +75,7 @@ class CodeGenerationSkill(Skill):
             metadata={"project_name": context.project_name},
         )
 
-    def _generate_module_files(
-        self, module_name: str, component: dict, endpoints: list, language: str
-    ) -> list[dict]:
+    def _generate_module_files(self, module_name: str, component: dict, endpoints: list, language: str) -> list[dict]:
         """Generate file stubs for a module."""
         ext = "py" if language == "Python" else "go"
         files = [
@@ -108,11 +107,12 @@ class CodeGenerationSkill(Skill):
                 f"@dataclass\n"
                 f"class {module_name.title().replace('_', '')}:\n"
                 f'    """Primary model for {module_name}."""\n\n'
-                f"    id: str = \"\"\n"
+                f'    id: str = ""\n'
                 f"    created_at: datetime = field(default_factory=datetime.now)\n"
                 f"    updated_at: datetime = field(default_factory=datetime.now)\n"
             )
-        return f"package {module_name}\n\n// {module_name.title()} model\ntype {module_name.title()} struct {{\n\tID string\n}}\n"
+        title = module_name.title()
+        return f"package {module_name}\n\n// {title} model\ntype {title} struct {{\n\tID string\n}}\n"
 
     @staticmethod
     def _generate_routes(module_name: str, endpoints: list, language: str) -> str:
@@ -121,15 +121,13 @@ class CodeGenerationSkill(Skill):
                 f'"""API routes for {module_name}."""\n',
                 "from fastapi import APIRouter, HTTPException\n",
                 f"from .service import {module_name.title().replace('_', '')}Service\n\n",
-                f"router = APIRouter(prefix=\"/api/v1/{module_name}s\", tags=[\"{module_name}\"])\n",
+                f'router = APIRouter(prefix="/api/v1/{module_name}s", tags=["{module_name}"])\n',
                 f"service = {module_name.title().replace('_', '')}Service()\n\n",
             ]
             for ep in endpoints:
                 method = ep.get("method", "GET").lower()
                 route_lines.append(
-                    f"@router.{method}(\"\")\n"
-                    f"async def {method}_{module_name}():\n"
-                    f"    return service.{method}()\n\n"
+                    f'@router.{method}("")\nasync def {method}_{module_name}():\n    return service.{method}()\n\n'
                 )
             return "\n".join(route_lines)
         return f"package {module_name}\n\n// Routes for {module_name}\n"
@@ -158,17 +156,17 @@ class CodeGenerationSkill(Skill):
         if language == "Python" and framework == "FastAPI":
             imports = "\n".join(
                 f"from app.{m['name']}.routes import router as {m['name']}_router"
-                for m in modules if m["name"] != "app" and m.get("files")
+                for m in modules
+                if m["name"] != "app" and m.get("files")
             )
             includes = "\n".join(
-                f"app.include_router({m['name']}_router)"
-                for m in modules if m["name"] != "app" and m.get("files")
+                f"app.include_router({m['name']}_router)" for m in modules if m["name"] != "app" and m.get("files")
             )
             return (
                 f'"""Application entry point."""\n\n'
                 f"from fastapi import FastAPI\n\n"
                 f"{imports}\n\n"
-                f"app = FastAPI(title=\"Generated API\")\n\n"
+                f'app = FastAPI(title="Generated API")\n\n'
                 f"{includes}\n"
             )
         return "package main\n\nfunc main() {\n}\n"

@@ -16,8 +16,8 @@ from .agents import (
 from .config import ProjectConfig
 from .core.orchestrator import Orchestrator
 from .core.session import OnDemandSession
-from .whatsapp.session import WhatsAppGroupSession
 from .whatsapp.client import WhatsAppConfig
+from .whatsapp.session import WhatsAppGroupSession
 
 
 def create_team(config: ProjectConfig | None = None) -> Orchestrator:
@@ -140,7 +140,8 @@ def main() -> None:
     )
     demand_parser.add_argument("--project-name", "-p", default="My Project", help="Project name")
     demand_parser.add_argument(
-        "--requirements", "-r",
+        "--requirements",
+        "-r",
         help="Optional initial requirements to seed the session",
     )
 
@@ -153,27 +154,34 @@ def main() -> None:
     wa_parser.add_argument("--owner", default="", help="Your display name in the group")
     wa_parser.add_argument("--phone", default="", help="Your WhatsApp phone number")
     wa_parser.add_argument(
-        "--webhook", action="store_true",
+        "--webhook",
+        action="store_true",
         help="Start webhook server for real WhatsApp integration",
     )
     wa_parser.add_argument(
-        "--webhook-port", type=int, default=8080,
+        "--webhook-port",
+        type=int,
+        default=8080,
         help="Port for the webhook server (default: 8080)",
     )
     wa_parser.add_argument(
-        "--phone-number-id", default="",
+        "--phone-number-id",
+        default="",
         help="WhatsApp Business phone number ID",
     )
     wa_parser.add_argument(
-        "--access-token", default="",
+        "--access-token",
+        default="",
         help="WhatsApp Business API access token",
     )
     wa_parser.add_argument(
-        "--verify-token", default="",
+        "--verify-token",
+        default="",
         help="Webhook verification token",
     )
     wa_parser.add_argument(
-        "--requirements", "-r",
+        "--requirements",
+        "-r",
         help="Optional initial requirements to seed the session",
     )
 

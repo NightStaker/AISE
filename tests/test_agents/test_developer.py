@@ -1,10 +1,10 @@
 """Tests for the Developer agent and skills."""
 
-from aise.core.artifact import ArtifactStore
-from aise.core.message import MessageBus
 from aise.agents.architect import ArchitectAgent
 from aise.agents.developer import DeveloperAgent
 from aise.agents.product_manager import ProductManagerAgent
+from aise.core.artifact import ArtifactStore
+from aise.core.message import MessageBus
 
 
 class TestDeveloperAgent:
@@ -54,7 +54,10 @@ class TestDeveloperAgent:
 
     def test_bug_fix(self):
         dev, store = self._setup_with_design()
-        artifact = dev.execute_skill("bug_fix", {
-            "bug_reports": [{"id": "BUG-001", "description": "Login fails"}],
-        })
+        artifact = dev.execute_skill(
+            "bug_fix",
+            {
+                "bug_reports": [{"id": "BUG-001", "description": "Login fails"}],
+            },
+        )
         assert artifact.content["total_bugs"] == 1

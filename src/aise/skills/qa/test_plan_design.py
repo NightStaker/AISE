@@ -63,32 +63,40 @@ class TestPlanDesignSkill(Skill):
         # Risk analysis
         risks = []
         if len(service_components) > 3:
-            risks.append({
-                "risk": "Complex inter-service communication",
-                "impact": "high",
-                "mitigation": "Contract testing between services",
-            })
+            risks.append(
+                {
+                    "risk": "Complex inter-service communication",
+                    "impact": "high",
+                    "mitigation": "Contract testing between services",
+                }
+            )
         if len(endpoints) > 15:
-            risks.append({
-                "risk": "Large API surface area",
-                "impact": "medium",
-                "mitigation": "Prioritize critical path testing",
-            })
-        risks.append({
-            "risk": "Data consistency across services",
-            "impact": "high",
-            "mitigation": "Transaction boundary testing",
-        })
+            risks.append(
+                {
+                    "risk": "Large API surface area",
+                    "impact": "medium",
+                    "mitigation": "Prioritize critical path testing",
+                }
+            )
+        risks.append(
+            {
+                "risk": "Data consistency across services",
+                "impact": "high",
+                "mitigation": "Transaction boundary testing",
+            }
+        )
 
         # Subsystem plans
         subsystem_plans = []
         for comp in service_components:
-            subsystem_plans.append({
-                "component": comp["name"],
-                "test_levels": ["unit", "integration"],
-                "priority": "high",
-                "estimated_test_count": 10,
-            })
+            subsystem_plans.append(
+                {
+                    "component": comp["name"],
+                    "test_levels": ["unit", "integration"],
+                    "priority": "high",
+                    "estimated_test_count": 10,
+                }
+            )
 
         plan = {
             "project_name": context.project_name,

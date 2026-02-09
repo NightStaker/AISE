@@ -34,83 +34,95 @@ class TestCaseDesignSkill(Skill):
             path.split("/")[-1].rstrip("s").replace("{id}", "")
 
             # Happy path
-            test_cases.append({
-                "id": f"TC-API-{len(test_cases) + 1:03d}",
-                "type": "integration",
-                "name": f"{method} {path} - success",
-                "preconditions": ["Service is running", "Database is seeded"],
-                "steps": [
-                    f"Send {method} request to {path}",
-                    "Verify response status code",
-                    "Verify response body schema",
-                ],
-                "expected_result": f"Returns {list(ep.get('status_codes', {}).keys())[0] if ep.get('status_codes') else '200'} with valid response",
-                "priority": "high",
-            })
+            test_cases.append(
+                {
+                    "id": f"TC-API-{len(test_cases) + 1:03d}",
+                    "type": "integration",
+                    "name": f"{method} {path} - success",
+                    "preconditions": ["Service is running", "Database is seeded"],
+                    "steps": [
+                        f"Send {method} request to {path}",
+                        "Verify response status code",
+                        "Verify response body schema",
+                    ],
+                    "expected_result": f"Returns "
+                    f"{list(ep.get('status_codes', {}).keys())[0] if ep.get('status_codes') else '200'}"
+                    f" with valid response",
+                    "priority": "high",
+                }
+            )
 
             # Error case
             if method in ("POST", "PUT"):
-                test_cases.append({
-                    "id": f"TC-API-{len(test_cases) + 1:03d}",
-                    "type": "integration",
-                    "name": f"{method} {path} - invalid input",
-                    "preconditions": ["Service is running"],
-                    "steps": [
-                        f"Send {method} request with invalid payload",
-                        "Verify error response",
-                    ],
-                    "expected_result": "Returns 400 with error details",
-                    "priority": "high",
-                })
+                test_cases.append(
+                    {
+                        "id": f"TC-API-{len(test_cases) + 1:03d}",
+                        "type": "integration",
+                        "name": f"{method} {path} - invalid input",
+                        "preconditions": ["Service is running"],
+                        "steps": [
+                            f"Send {method} request with invalid payload",
+                            "Verify error response",
+                        ],
+                        "expected_result": "Returns 400 with error details",
+                        "priority": "high",
+                    }
+                )
 
             # Auth test
-            test_cases.append({
-                "id": f"TC-API-{len(test_cases) + 1:03d}",
-                "type": "integration",
-                "name": f"{method} {path} - unauthorized",
-                "preconditions": ["Service is running", "No auth token"],
-                "steps": [
-                    f"Send {method} request without authentication",
-                    "Verify 401 response",
-                ],
-                "expected_result": "Returns 401 Unauthorized",
-                "priority": "medium",
-            })
+            test_cases.append(
+                {
+                    "id": f"TC-API-{len(test_cases) + 1:03d}",
+                    "type": "integration",
+                    "name": f"{method} {path} - unauthorized",
+                    "preconditions": ["Service is running", "No auth token"],
+                    "steps": [
+                        f"Send {method} request without authentication",
+                        "Verify 401 response",
+                    ],
+                    "expected_result": "Returns 401 Unauthorized",
+                    "priority": "medium",
+                }
+            )
 
         # E2E test cases for complete workflows
         for comp in service_components:
-            test_cases.append({
-                "id": f"TC-E2E-{len(test_cases) + 1:03d}",
-                "type": "e2e",
-                "name": f"Complete {comp['name']} CRUD workflow",
-                "preconditions": ["Full system is running"],
-                "steps": [
-                    f"Create a new {comp['name']} resource",
-                    "Verify it appears in list",
-                    "Update the resource",
-                    "Verify changes are persisted",
-                    "Delete the resource",
-                    "Verify it no longer exists",
-                ],
-                "expected_result": "Full CRUD lifecycle completes successfully",
-                "priority": "high",
-            })
+            test_cases.append(
+                {
+                    "id": f"TC-E2E-{len(test_cases) + 1:03d}",
+                    "type": "e2e",
+                    "name": f"Complete {comp['name']} CRUD workflow",
+                    "preconditions": ["Full system is running"],
+                    "steps": [
+                        f"Create a new {comp['name']} resource",
+                        "Verify it appears in list",
+                        "Update the resource",
+                        "Verify changes are persisted",
+                        "Delete the resource",
+                        "Verify it no longer exists",
+                    ],
+                    "expected_result": "Full CRUD lifecycle completes successfully",
+                    "priority": "high",
+                }
+            )
 
         # Regression test cases
-        test_cases.append({
-            "id": f"TC-REG-{len(test_cases) + 1:03d}",
-            "type": "regression",
-            "name": "Cross-service data consistency",
-            "preconditions": ["All services running"],
-            "steps": [
-                "Create resources across multiple services",
-                "Verify data consistency between services",
-                "Delete primary resource",
-                "Verify cascading effects",
-            ],
-            "expected_result": "Data remains consistent across services",
-            "priority": "high",
-        })
+        test_cases.append(
+            {
+                "id": f"TC-REG-{len(test_cases) + 1:03d}",
+                "type": "regression",
+                "name": "Cross-service data consistency",
+                "preconditions": ["All services running"],
+                "steps": [
+                    "Create resources across multiple services",
+                    "Verify data consistency between services",
+                    "Delete primary resource",
+                    "Verify cascading effects",
+                ],
+                "expected_result": "Data remains consistent across services",
+                "priority": "high",
+            }
+        )
 
         return Artifact(
             artifact_type=ArtifactType.TEST_CASES,

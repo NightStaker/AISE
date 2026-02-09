@@ -27,33 +27,54 @@ class SystemDesignSkill(Skill):
         # Derive components from features
         components = []
         for i, feature in enumerate(features, 1):
-            components.append({
-                "id": f"COMP-{i:03d}",
-                "name": f"{self._to_component_name(feature['name'])}Service",
-                "responsibility": feature["description"],
-                "type": "service",
-            })
+            components.append(
+                {
+                    "id": f"COMP-{i:03d}",
+                    "name": f"{self._to_component_name(feature['name'])}Service",
+                    "responsibility": feature["description"],
+                    "type": "service",
+                }
+            )
 
         # Add standard infrastructure components
         infra_components = [
-            {"id": "COMP-API", "name": "APIGateway", "responsibility": "Request routing and authentication", "type": "infrastructure"},
-            {"id": "COMP-DB", "name": "Database", "responsibility": "Persistent data storage", "type": "infrastructure"},
-            {"id": "COMP-CACHE", "name": "Cache", "responsibility": "Performance caching layer", "type": "infrastructure"},
+            {
+                "id": "COMP-API",
+                "name": "APIGateway",
+                "responsibility": "Request routing and authentication",
+                "type": "infrastructure",
+            },
+            {
+                "id": "COMP-DB",
+                "name": "Database",
+                "responsibility": "Persistent data storage",
+                "type": "infrastructure",
+            },
+            {
+                "id": "COMP-CACHE",
+                "name": "Cache",
+                "responsibility": "Performance caching layer",
+                "type": "infrastructure",
+            },
         ]
 
         # Data flows between components
         data_flows = []
         for comp in components:
-            data_flows.append({
-                "from": "APIGateway",
-                "to": comp["name"],
-                "description": f"Routes requests to {comp['name']}",
-            })
-            data_flows.append({
-                "from": comp["name"],
-                "to": "Database",
-                "description": f"{comp['name']} persists data",
-            })
+            data_flows.append(
+                {
+                    "from": "APIGateway",
+                    "to": comp["name"],
+                    "description": f"Routes requests to {comp['name']}",
+                }
+            )
+            data_flows.append(
+                {
+                    "from": comp["name"],
+                    "to": "Database",
+                    "description": f"{comp['name']} persists data",
+                }
+            )
 
         design = {
             "project_name": context.project_name,
@@ -65,7 +86,10 @@ class SystemDesignSkill(Skill):
                 "environments": ["development", "staging", "production"],
             },
             "non_functional_considerations": [
-                {"requirement": nfr["description"], "approach": f"Address via architecture for: {nfr['description'][:50]}"}
+                {
+                    "requirement": nfr["description"],
+                    "approach": f"Address via architecture for: {nfr['description'][:50]}",
+                }
                 for nfr in non_functional
             ],
         }

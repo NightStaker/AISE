@@ -97,7 +97,6 @@ class TestWhatsAppBridge:
 
         bridge.start()
 
-        # Capture bus messages
         # Bridge already intercepts publish, so we track history
         group.post_message("Alice", "Add a login page")
 
