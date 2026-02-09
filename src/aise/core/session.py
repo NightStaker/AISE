@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import shlex
 from enum import Enum
-from typing import Any, Callable, TextIO
+from typing import Any, Callable
 
-from .artifact import ArtifactStore, ArtifactType
-from .message import MessageBus, MessageType
+from .artifact import ArtifactType
+from .message import MessageType
 from .orchestrator import Orchestrator
 from .workflow import WorkflowEngine
 
@@ -226,7 +225,7 @@ class OnDemandSession:
             return {"status": "error", "output": "Please describe the bug. Usage: bug <description>"}
 
         try:
-            bug_reports = [{"id": f"BUG-USER", "description": text}]
+            bug_reports = [{"id": "BUG-USER", "description": text}]
             artifact_id = self.orchestrator.execute_task(
                 "developer",
                 "bug_fix",
@@ -334,7 +333,7 @@ class OnDemandSession:
             return {"status": "error", "output": f"Unknown phase '{phase_name}'. Available: {available}"}
 
         # Build a single-phase workflow to execute
-        from .workflow import Workflow, Phase
+        from .workflow import Workflow
 
         single = Workflow(name=f"on_demand_{phase_name}")
         single.add_phase(target_phase)

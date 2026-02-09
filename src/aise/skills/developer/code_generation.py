@@ -119,7 +119,7 @@ class CodeGenerationSkill(Skill):
         if language == "Python":
             route_lines = [
                 f'"""API routes for {module_name}."""\n',
-                f"from fastapi import APIRouter, HTTPException\n",
+                "from fastapi import APIRouter, HTTPException\n",
                 f"from .service import {module_name.title().replace('_', '')}Service\n\n",
                 f"router = APIRouter(prefix=\"/api/v1/{module_name}s\", tags=[\"{module_name}\"])\n",
                 f"service = {module_name.title().replace('_', '')}Service()\n\n",
@@ -171,7 +171,7 @@ class CodeGenerationSkill(Skill):
                 f"app = FastAPI(title=\"Generated API\")\n\n"
                 f"{includes}\n"
             )
-        return f"package main\n\nfunc main() {{\n}}\n"
+        return "package main\n\nfunc main() {\n}\n"
 
     @staticmethod
     def _to_module_name(component_name: str) -> str:

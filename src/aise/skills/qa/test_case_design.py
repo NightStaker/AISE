@@ -31,7 +31,7 @@ class TestCaseDesignSkill(Skill):
         for ep in endpoints:
             method = ep.get("method", "GET")
             path = ep.get("path", "/unknown")
-            resource = path.split("/")[-1].rstrip("s").replace("{id}", "")
+            path.split("/")[-1].rstrip("s").replace("{id}", "")
 
             # Happy path
             test_cases.append({
