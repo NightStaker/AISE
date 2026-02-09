@@ -1,8 +1,8 @@
 """Tests for the Product Manager agent and skills."""
 
+from aise.agents.product_manager import ProductManagerAgent
 from aise.core.artifact import ArtifactStore
 from aise.core.message import MessageBus
-from aise.agents.product_manager import ProductManagerAgent
 
 
 class TestProductManagerAgent:
@@ -49,9 +49,7 @@ class TestProductManagerAgent:
 
     def test_product_design(self):
         agent, store = self._make_agent()
-        agent.execute_skill(
-            "requirement_analysis", {"raw_requirements": "Feature A\nFeature B"}
-        )
+        agent.execute_skill("requirement_analysis", {"raw_requirements": "Feature A\nFeature B"})
         agent.execute_skill("user_story_writing", {})
         artifact = agent.execute_skill("product_design", {})
         assert "features" in artifact.content

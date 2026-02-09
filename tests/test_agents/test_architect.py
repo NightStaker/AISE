@@ -1,9 +1,9 @@
 """Tests for the Architect agent and skills."""
 
-from aise.core.artifact import ArtifactStore
-from aise.core.message import MessageBus
 from aise.agents.architect import ArchitectAgent
 from aise.agents.product_manager import ProductManagerAgent
+from aise.core.artifact import ArtifactStore
+from aise.core.message import MessageBus
 
 
 class TestArchitectAgent:
@@ -13,9 +13,7 @@ class TestArchitectAgent:
         pm = ProductManagerAgent(bus, store)
         arch = ArchitectAgent(bus, store)
 
-        pm.execute_skill(
-            "requirement_analysis", {"raw_requirements": "User auth\nData export"}
-        )
+        pm.execute_skill("requirement_analysis", {"raw_requirements": "User auth\nData export"})
         pm.execute_skill("user_story_writing", {})
         pm.execute_skill("product_design", {})
 

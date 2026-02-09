@@ -2,12 +2,6 @@
 
 from typing import Any
 
-from aise.config import AgentConfig, ModelConfig, ProjectConfig
-from aise.core.agent import Agent, AgentRole
-from aise.core.artifact import Artifact, ArtifactStore, ArtifactType
-from aise.core.llm import LLMClient
-from aise.core.message import MessageBus
-from aise.core.skill import Skill, SkillContext
 from aise.agents import (
     ArchitectAgent,
     DeveloperAgent,
@@ -15,6 +9,12 @@ from aise.agents import (
     QAEngineerAgent,
     TeamLeadAgent,
 )
+from aise.config import AgentConfig, ModelConfig, ProjectConfig
+from aise.core.agent import Agent, AgentRole
+from aise.core.artifact import Artifact, ArtifactStore, ArtifactType
+from aise.core.llm import LLMClient
+from aise.core.message import MessageBus
+from aise.core.skill import Skill, SkillContext
 from aise.main import create_team
 
 
@@ -34,9 +34,7 @@ class EchoSkill(Skill):
                 "input": input_data,
                 "has_model_config": context.model_config is not None,
                 "has_llm_client": context.llm_client is not None,
-                "provider": context.model_config.provider
-                if context.model_config
-                else None,
+                "provider": context.model_config.provider if context.model_config else None,
                 "model": context.model_config.model if context.model_config else None,
             },
             producer="test",
@@ -228,9 +226,7 @@ class TestCreateTeamWithModelConfig:
 
     def test_create_team_with_project_default(self):
         cfg = ProjectConfig(
-            default_model=ModelConfig(
-                provider="anthropic", model="claude-sonnet-4-20250514"
-            ),
+            default_model=ModelConfig(provider="anthropic", model="claude-sonnet-4-20250514"),
         )
         orchestrator = create_team(cfg)
         for agent in orchestrator.agents.values():
@@ -243,9 +239,7 @@ class TestCreateTeamWithModelConfig:
                 "product_manager": AgentConfig(name="product_manager"),
                 "architect": AgentConfig(
                     name="architect",
-                    model=ModelConfig(
-                        provider="anthropic", model="claude-opus-4-20250514"
-                    ),
+                    model=ModelConfig(provider="anthropic", model="claude-opus-4-20250514"),
                 ),
                 "developer": AgentConfig(
                     name="developer",

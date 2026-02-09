@@ -21,9 +21,7 @@ class CodeGenerationSkill(Skill):
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
         store = context.artifact_store
-        components = store.get_content(
-            ArtifactType.ARCHITECTURE_DESIGN, "components", []
-        )
+        components = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
         endpoints = store.get_content(ArtifactType.API_CONTRACT, "endpoints", [])
         backend = store.get_content(ArtifactType.TECH_STACK, "backend", {})
         language = backend.get("language", "Python")
@@ -37,18 +35,14 @@ class CodeGenerationSkill(Skill):
                 continue
 
             module_name = self._to_module_name(comp["name"])
-            related_endpoints = [
-                ep for ep in endpoints if module_name in ep.get("path", "").lower()
-            ]
+            related_endpoints = [ep for ep in endpoints if module_name in ep.get("path", "").lower()]
 
             module = {
                 "name": module_name,
                 "component_id": comp["id"],
                 "language": language,
                 "framework": framework,
-                "files": self._generate_module_files(
-                    module_name, comp, related_endpoints, language
-                ),
+                "files": self._generate_module_files(module_name, comp, related_endpoints, language),
             }
             modules.append(module)
 
@@ -63,9 +57,7 @@ class CodeGenerationSkill(Skill):
                     {
                         "path": f"app/main.{'py' if language == 'Python' else 'go'}",
                         "description": "Application entry point",
-                        "content": self._generate_app_entry(
-                            modules, language, framework
-                        ),
+                        "content": self._generate_app_entry(modules, language, framework),
                     }
                 ],
             }
@@ -83,9 +75,7 @@ class CodeGenerationSkill(Skill):
             metadata={"project_name": context.project_name},
         )
 
-    def _generate_module_files(
-        self, module_name: str, component: dict, endpoints: list, language: str
-    ) -> list[dict]:
+    def _generate_module_files(self, module_name: str, component: dict, endpoints: list, language: str) -> list[dict]:
         """Generate file stubs for a module."""
         ext = "py" if language == "Python" else "go"
         files = [
@@ -121,7 +111,8 @@ class CodeGenerationSkill(Skill):
                 f"    created_at: datetime = field(default_factory=datetime.now)\n"
                 f"    updated_at: datetime = field(default_factory=datetime.now)\n"
             )
-        return f"package {module_name}\n\n// {module_name.title()} model\ntype {module_name.title()} struct {{\n\tID string\n}}\n"
+        title = module_name.title()
+        return f"package {module_name}\n\n// {title} model\ntype {title} struct {{\n\tID string\n}}\n"
 
     @staticmethod
     def _generate_routes(module_name: str, endpoints: list, language: str) -> str:
@@ -136,9 +127,7 @@ class CodeGenerationSkill(Skill):
             for ep in endpoints:
                 method = ep.get("method", "GET").lower()
                 route_lines.append(
-                    f'@router.{method}("")\n'
-                    f"async def {method}_{module_name}():\n"
-                    f"    return service.{method}()\n\n"
+                    f'@router.{method}("")\nasync def {method}_{module_name}():\n    return service.{method}()\n\n'
                 )
             return "\n".join(route_lines)
         return f"package {module_name}\n\n// Routes for {module_name}\n"
@@ -160,9 +149,7 @@ class CodeGenerationSkill(Skill):
                 f"    def delete(self):\n"
                 f"        return None\n"
             )
-        return (
-            f"package {module_name}\n\n// {class_name}Service handles business logic\n"
-        )
+        return f"package {module_name}\n\n// {class_name}Service handles business logic\n"
 
     @staticmethod
     def _generate_app_entry(modules: list, language: str, framework: str) -> str:
@@ -173,9 +160,7 @@ class CodeGenerationSkill(Skill):
                 if m["name"] != "app" and m.get("files")
             )
             includes = "\n".join(
-                f"app.include_router({m['name']}_router)"
-                for m in modules
-                if m["name"] != "app" and m.get("files")
+                f"app.include_router({m['name']}_router)" for m in modules if m["name"] != "app" and m.get("files")
             )
             return (
                 f'"""Application entry point."""\n\n'

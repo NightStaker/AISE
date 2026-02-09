@@ -32,9 +32,7 @@ class Message:
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
-    def reply(
-        self, content: dict[str, Any], msg_type: MessageType | None = None
-    ) -> Message:
+    def reply(self, content: dict[str, Any], msg_type: MessageType | None = None) -> Message:
         """Create a reply to this message."""
         return Message(
             sender=self.receiver,
@@ -81,11 +79,7 @@ class MessageBus:
         """Get message history, optionally filtered by agent."""
         if agent_name is None:
             return list(self._history)
-        return [
-            m
-            for m in self._history
-            if m.sender == agent_name or m.receiver == agent_name
-        ]
+        return [m for m in self._history if m.sender == agent_name or m.receiver == agent_name]
 
     def clear_history(self) -> None:
         """Clear all message history."""

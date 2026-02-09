@@ -55,9 +55,7 @@ class TestReviewSkill(Skill):
 
             total_endpoints = len(endpoints)
             covered = len(tested_paths)
-            metrics["endpoint_coverage"] = (
-                round(covered / total_endpoints * 100, 1) if total_endpoints > 0 else 0
-            )
+            metrics["endpoint_coverage"] = round(covered / total_endpoints * 100, 1) if total_endpoints > 0 else 0
             metrics["total_endpoints"] = total_endpoints
             metrics["covered_endpoints"] = covered
 
@@ -74,9 +72,7 @@ class TestReviewSkill(Skill):
         if automated and test_cases:
             total_cases = test_cases.content.get("total_count", 0)
             total_scripts = automated.content.get("total_scripts", 0)
-            metrics["automation_rate"] = (
-                round(total_scripts / total_cases * 100, 1) if total_cases > 0 else 0
-            )
+            metrics["automation_rate"] = round(total_scripts / total_cases * 100, 1) if total_cases > 0 else 0
             metrics["total_test_cases"] = total_cases
             metrics["automated_scripts"] = total_scripts
 
@@ -121,16 +117,10 @@ class TestReviewSkill(Skill):
                     }
                 )
 
-        approved = (
-            all(i["severity"] not in ("critical", "high") for i in issues)
-            if issues
-            else True
-        )
+        approved = all(i["severity"] not in ("critical", "high") for i in issues) if issues else True
 
         if automated:
-            automated.status = (
-                ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
-            )
+            automated.status = ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
 
         return Artifact(
             artifact_type=ArtifactType.REVIEW_FEEDBACK,
@@ -138,8 +128,7 @@ class TestReviewSkill(Skill):
                 "approved": approved,
                 "metrics": metrics,
                 "issues": issues,
-                "summary": f"Test review: {'Approved' if approved else 'Needs revision'}, "
-                f"{len(issues)} issues found.",
+                "summary": f"Test review: {'Approved' if approved else 'Needs revision'}, {len(issues)} issues found.",
             },
             producer="qa_engineer",
             metadata={"review_target": "testing", "project_name": context.project_name},

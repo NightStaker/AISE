@@ -1,11 +1,11 @@
 """Tests for the QA Engineer agent and skills."""
 
-from aise.core.artifact import ArtifactStore
-from aise.core.message import MessageBus
 from aise.agents.architect import ArchitectAgent
 from aise.agents.developer import DeveloperAgent
 from aise.agents.product_manager import ProductManagerAgent
 from aise.agents.qa_engineer import QAEngineerAgent
+from aise.core.artifact import ArtifactStore
+from aise.core.message import MessageBus
 
 
 class TestQAEngineerAgent:
@@ -17,9 +17,7 @@ class TestQAEngineerAgent:
         dev = DeveloperAgent(bus, store)
         qa = QAEngineerAgent(bus, store)
 
-        pm.execute_skill(
-            "requirement_analysis", {"raw_requirements": "User login\nReports"}
-        )
+        pm.execute_skill("requirement_analysis", {"raw_requirements": "User login\nReports"})
         pm.execute_skill("user_story_writing", {})
         pm.execute_skill("product_design", {})
         arch.execute_skill("system_design", {})

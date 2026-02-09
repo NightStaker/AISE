@@ -1,6 +1,7 @@
 """Tests for the WhatsApp group chat model."""
 
 import pytest
+
 from aise.whatsapp.group import GroupChat, GroupMember, MemberRole
 
 
@@ -91,9 +92,7 @@ class TestGroupChat:
 
     def test_get_info(self):
         group = GroupChat(name="My Group")
-        group.add_member(
-            GroupMember(name="dev", role=MemberRole.AGENT, agent_role="developer")
-        )
+        group.add_member(GroupMember(name="dev", role=MemberRole.AGENT, agent_role="developer"))
         group.add_member(GroupMember(name="Alice", role=MemberRole.HUMAN_OWNER))
         info = group.get_info()
         assert info["name"] == "My Group"
@@ -103,9 +102,7 @@ class TestGroupChat:
 
     def test_format_history(self):
         group = GroupChat()
-        group.add_member(
-            GroupMember(name="dev", role=MemberRole.AGENT, agent_role="developer")
-        )
+        group.add_member(GroupMember(name="dev", role=MemberRole.AGENT, agent_role="developer"))
         group.post_message("dev", "Hello!")
         history = group.format_history()
         assert "dev" in history

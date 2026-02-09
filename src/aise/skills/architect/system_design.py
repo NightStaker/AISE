@@ -22,9 +22,7 @@ class SystemDesignSkill(Skill):
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
         store = context.artifact_store
         features = store.get_content(ArtifactType.PRD, "features", [])
-        non_functional = store.get_content(
-            ArtifactType.REQUIREMENTS, "non_functional_requirements", []
-        )
+        non_functional = store.get_content(ArtifactType.REQUIREMENTS, "non_functional_requirements", [])
 
         # Derive components from features
         components = []
@@ -80,9 +78,7 @@ class SystemDesignSkill(Skill):
 
         design = {
             "project_name": context.project_name,
-            "architecture_style": "microservices"
-            if len(components) > 3
-            else "monolith",
+            "architecture_style": "microservices" if len(components) > 3 else "monolith",
             "components": components + infra_components,
             "data_flows": data_flows,
             "deployment": {

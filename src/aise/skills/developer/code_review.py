@@ -43,10 +43,7 @@ class CodeReviewSkill(Skill):
                             }
                         )
 
-                    if (
-                        "password" in content.lower()
-                        and "hardcoded" not in content.lower()
-                    ):
+                    if "password" in content.lower() and "hardcoded" not in content.lower():
                         categories["security"].append(
                             {
                                 "file": file_info["path"],
@@ -97,15 +94,11 @@ class CodeReviewSkill(Skill):
                 item["category"] = category
                 findings.append(item)
 
-        critical_or_high = [
-            f for f in findings if f["severity"] in ("critical", "high")
-        ]
+        critical_or_high = [f for f in findings if f["severity"] in ("critical", "high")]
         approved = len(critical_or_high) == 0
 
         if code:
-            code.status = (
-                ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
-            )
+            code.status = ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
 
         return Artifact(
             artifact_type=ArtifactType.REVIEW_FEEDBACK,

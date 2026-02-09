@@ -77,15 +77,9 @@ class ArchitectureReviewSkill(Skill):
         # Check code alignment if code exists
         if code and arch:
             code_modules = code.content.get("modules", [])
-            component_names = {
-                c["name"]
-                for c in arch.content.get("components", [])
-                if c["type"] == "service"
-            }
+            component_names = {c["name"] for c in arch.content.get("components", []) if c["type"] == "service"}
             for comp_name in component_names:
-                found = any(
-                    comp_name.lower() in m.get("name", "").lower() for m in code_modules
-                )
+                found = any(comp_name.lower() in m.get("name", "").lower() for m in code_modules)
                 if not found:
                     issues.append(
                         {
@@ -95,16 +89,10 @@ class ArchitectureReviewSkill(Skill):
                         }
                     )
 
-        approved = (
-            all(i["severity"] not in ("critical", "high") for i in issues)
-            if issues
-            else True
-        )
+        approved = all(i["severity"] not in ("critical", "high") for i in issues) if issues else True
 
         if arch:
-            arch.status = (
-                ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
-            )
+            arch.status = ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
 
         return Artifact(
             artifact_type=ArtifactType.REVIEW_FEEDBACK,

@@ -115,9 +115,7 @@ class WhatsAppGroupSession:
                 message_callback=self.bridge.handle_incoming_whatsapp,
             )
             self._webhook_server.start()
-            self._print(
-                f"Webhook server running on port {self.whatsapp_config.webhook_port}"
-            )
+            self._print(f"Webhook server running on port {self.whatsapp_config.webhook_port}")
 
         # Print group info
         self._print(_WA_BANNER)
@@ -313,9 +311,7 @@ class WhatsAppGroupSession:
 
         elif cmd == "/phase":
             if len(parts) < 2:
-                self._print(
-                    "Usage: /phase <requirements|design|implementation|testing>"
-                )
+                self._print("Usage: /phase <requirements|design|implementation|testing>")
                 return
             phase_name = parts[1]
             result = self._session.handle_input(f"phase {phase_name}")
@@ -329,9 +325,7 @@ class WhatsAppGroupSession:
 
         else:
             self._print(f"Unknown command: {cmd}")
-            self._print(
-                "Available: /join /invite /members /history /status /workflow /phase /quit"
-            )
+            self._print("Available: /join /invite /members /history /status /workflow /phase /quit")
 
     # ------------------------------------------------------------------
     # Callbacks

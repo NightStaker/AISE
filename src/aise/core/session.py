@@ -278,9 +278,7 @@ class OnDemandSession:
         lines.append(f"\nArtifacts: {len(all_artifacts)}")
         type_counts: dict[str, int] = {}
         for a in all_artifacts:
-            type_counts[a.artifact_type.value] = (
-                type_counts.get(a.artifact_type.value, 0) + 1
-            )
+            type_counts[a.artifact_type.value] = type_counts.get(a.artifact_type.value, 0) + 1
         for atype, count in sorted(type_counts.items()):
             lines.append(f"  {atype:25s}  {count}")
 
@@ -364,9 +362,7 @@ class OnDemandSession:
                     lines.append(f"    {tkey}: {tres.get('status', '?')}")
                 review = r.get("review")
                 if review:
-                    lines.append(
-                        f"  Review: {'approved' if review.get('approved') else 'rejected'}"
-                    )
+                    lines.append(f"  Review: {'approved' if review.get('approved') else 'rejected'}")
 
             return {"status": "ok", "output": "\n".join(lines)}
 
@@ -417,9 +413,7 @@ class OnDemandSession:
 
             lines = [f"Team Lead decomposed your request into {len(tasks)} tasks:"]
             for t in tasks[:10]:  # Show at most 10
-                lines.append(
-                    f"  [{t.get('id')}] {t.get('agent'):20s} {t.get('description', '')}"
-                )
+                lines.append(f"  [{t.get('id')}] {t.get('agent'):20s} {t.get('description', '')}")
             if len(tasks) > 10:
                 lines.append(f"  ... and {len(tasks) - 10} more")
 

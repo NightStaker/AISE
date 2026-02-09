@@ -21,9 +21,7 @@ class TestPlanDesignSkill(Skill):
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
         store = context.artifact_store
-        components = store.get_content(
-            ArtifactType.ARCHITECTURE_DESIGN, "components", []
-        )
+        components = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
         service_components = [c for c in components if c["type"] == "service"]
         endpoints = store.get_content(ArtifactType.API_CONTRACT, "endpoints", [])
 

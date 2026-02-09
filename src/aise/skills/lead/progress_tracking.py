@@ -54,9 +54,7 @@ class ProgressTrackingSkill(Skill):
                 "tech_stack": self._artifact_status(tech),
             },
             "complete": all(
-                self._artifact_status(a) in ("approved", "draft", "revised")
-                for a in [arch, api, tech]
-                if a is not None
+                self._artifact_status(a) in ("approved", "draft", "revised") for a in [arch, api, tech] if a is not None
             )
             and arch is not None,
         }

@@ -4,14 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-
-from aise.core.session import OnDemandSession, UserCommand, parse_command
-from aise.core.orchestrator import Orchestrator
 from aise.core.agent import Agent, AgentRole
 from aise.core.artifact import Artifact, ArtifactType
+from aise.core.orchestrator import Orchestrator
+from aise.core.session import OnDemandSession, UserCommand, parse_command
 from aise.core.skill import Skill, SkillContext
 from aise.main import create_team
-
 
 # ---------------------------------------------------------------------------
 # Helpers

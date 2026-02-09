@@ -1,9 +1,9 @@
 """Tests for the Team Lead agent and skills."""
 
+from aise.agents.product_manager import ProductManagerAgent
+from aise.agents.team_lead import TeamLeadAgent
 from aise.core.artifact import ArtifactStore
 from aise.core.message import MessageBus
-from aise.agents.team_lead import TeamLeadAgent
-from aise.agents.product_manager import ProductManagerAgent
 
 
 class TestTeamLeadAgent:

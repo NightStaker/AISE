@@ -74,9 +74,7 @@ class ProductReviewSkill(Skill):
 
         # Update PRD status
         if prd:
-            prd.status = (
-                ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
-            )
+            prd.status = ArtifactStatus.APPROVED if approved else ArtifactStatus.REJECTED
 
         return Artifact(
             artifact_type=ArtifactType.REVIEW_FEEDBACK,

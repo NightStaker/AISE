@@ -92,9 +92,7 @@ class ArtifactStore:
             return None
         return max(artifacts, key=lambda a: a.version)
 
-    def get_content(
-        self, artifact_type: ArtifactType, key: str, default: Any = None
-    ) -> Any:
+    def get_content(self, artifact_type: ArtifactType, key: str, default: Any = None) -> Any:
         """Get a content field from the latest artifact of a given type.
 
         Shorthand for the common pattern:

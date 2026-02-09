@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 

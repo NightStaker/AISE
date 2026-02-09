@@ -76,13 +76,7 @@ class TestAutomationSkill(Skill):
     def _generate_test_script(test_case: dict, framework: str) -> str:
         """Generate a pytest test script from a test case."""
         tc_id = test_case["id"]
-        tc_name = (
-            test_case["name"]
-            .lower()
-            .replace(" ", "_")
-            .replace("-", "_")
-            .replace("/", "_")
-        )
+        tc_name = test_case["name"].lower().replace(" ", "_").replace("-", "_").replace("/", "_")
         tc_type = test_case["type"]
         steps = test_case.get("steps", [])
         expected = test_case.get("expected_result", "")

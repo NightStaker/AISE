@@ -21,16 +21,10 @@ class TechStackSelectionSkill(Skill):
 
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
         store = context.artifact_store
-        non_functional = store.get_content(
-            ArtifactType.REQUIREMENTS, "non_functional_requirements", []
-        )
-        arch_style = store.get_content(
-            ArtifactType.ARCHITECTURE_DESIGN, "architecture_style", "monolith"
-        )
+        non_functional = store.get_content(ArtifactType.REQUIREMENTS, "non_functional_requirements", [])
+        arch_style = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "architecture_style", "monolith")
 
-        nfr_text = " ".join(
-            nfr.get("description", "").lower() for nfr in non_functional
-        )
+        nfr_text = " ".join(nfr.get("description", "").lower() for nfr in non_functional)
 
         # Select backend based on requirements
         if "performance" in nfr_text or "high throughput" in nfr_text:
@@ -53,11 +47,7 @@ class TechStackSelectionSkill(Skill):
             }
 
         # Select database
-        if (
-            "relational" in nfr_text
-            or "consistency" in nfr_text
-            or "transaction" in nfr_text
-        ):
+        if "relational" in nfr_text or "consistency" in nfr_text or "transaction" in nfr_text:
             database = {
                 "type": "PostgreSQL",
                 "justification": "ACID compliance for data consistency",

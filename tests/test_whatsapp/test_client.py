@@ -45,9 +45,7 @@ class TestWhatsAppClient:
                     "changes": [
                         {
                             "value": {
-                                "contacts": [
-                                    {"wa_id": "123", "profile": {"name": "Alice"}}
-                                ],
+                                "contacts": [{"wa_id": "123", "profile": {"name": "Alice"}}],
                                 "messages": [
                                     {
                                         "from": "123",
@@ -88,18 +86,14 @@ class TestWhatsAppClient:
                     "changes": [
                         {
                             "value": {
-                                "contacts": [
-                                    {"wa_id": "123", "profile": {"name": "Bob"}}
-                                ],
+                                "contacts": [{"wa_id": "123", "profile": {"name": "Bob"}}],
                                 "messages": [
                                     {
                                         "from": "123",
                                         "id": "msg_2",
                                         "timestamp": "1234567890",
                                         "type": "interactive",
-                                        "interactive": {
-                                            "button_reply": {"title": "Yes"}
-                                        },
+                                        "interactive": {"button_reply": {"title": "Yes"}},
                                     }
                                 ],
                             }

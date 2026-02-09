@@ -1,10 +1,10 @@
 """Tests for the Developer agent and skills."""
 
-from aise.core.artifact import ArtifactStore
-from aise.core.message import MessageBus
 from aise.agents.architect import ArchitectAgent
 from aise.agents.developer import DeveloperAgent
 from aise.agents.product_manager import ProductManagerAgent
+from aise.core.artifact import ArtifactStore
+from aise.core.message import MessageBus
 
 
 class TestDeveloperAgent:
@@ -15,9 +15,7 @@ class TestDeveloperAgent:
         arch = ArchitectAgent(bus, store)
         dev = DeveloperAgent(bus, store)
 
-        pm.execute_skill(
-            "requirement_analysis", {"raw_requirements": "User login\nDashboard"}
-        )
+        pm.execute_skill("requirement_analysis", {"raw_requirements": "User login\nDashboard"})
         pm.execute_skill("user_story_writing", {})
         pm.execute_skill("product_design", {})
         arch.execute_skill("system_design", {})

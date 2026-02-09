@@ -7,7 +7,6 @@ from typing import Any
 from ...core.artifact import Artifact, ArtifactType
 from ...core.skill import Skill, SkillContext
 
-
 # Mapping of skills to agent roles
 SKILL_TO_AGENT = {
     "requirement_analysis": "product_manager",

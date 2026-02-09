@@ -22,9 +22,7 @@ class TestCaseDesignSkill(Skill):
     def execute(self, input_data: dict[str, Any], context: SkillContext) -> Artifact:
         store = context.artifact_store
         endpoints = store.get_content(ArtifactType.API_CONTRACT, "endpoints", [])
-        components = store.get_content(
-            ArtifactType.ARCHITECTURE_DESIGN, "components", []
-        )
+        components = store.get_content(ArtifactType.ARCHITECTURE_DESIGN, "components", [])
         service_components = [c for c in components if c["type"] == "service"]
 
         test_cases = []
@@ -47,7 +45,9 @@ class TestCaseDesignSkill(Skill):
                         "Verify response status code",
                         "Verify response body schema",
                     ],
-                    "expected_result": f"Returns {list(ep.get('status_codes', {}).keys())[0] if ep.get('status_codes') else '200'} with valid response",
+                    "expected_result": f"Returns "
+                    f"{list(ep.get('status_codes', {}).keys())[0] if ep.get('status_codes') else '200'}"
+                    f" with valid response",
                     "priority": "high",
                 }
             )
@@ -130,13 +130,9 @@ class TestCaseDesignSkill(Skill):
                 "test_cases": test_cases,
                 "total_count": len(test_cases),
                 "by_type": {
-                    "integration": sum(
-                        1 for tc in test_cases if tc["type"] == "integration"
-                    ),
+                    "integration": sum(1 for tc in test_cases if tc["type"] == "integration"),
                     "e2e": sum(1 for tc in test_cases if tc["type"] == "e2e"),
-                    "regression": sum(
-                        1 for tc in test_cases if tc["type"] == "regression"
-                    ),
+                    "regression": sum(1 for tc in test_cases if tc["type"] == "regression"),
                 },
             },
             producer="qa_engineer",

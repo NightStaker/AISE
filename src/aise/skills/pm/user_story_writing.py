@@ -47,9 +47,7 @@ class UserStoryWritingSkill(Skill):
             metadata={"project_name": context.project_name},
         )
 
-    def _get_requirements(
-        self, input_data: dict[str, Any], context: SkillContext
-    ) -> list[dict]:
+    def _get_requirements(self, input_data: dict[str, Any], context: SkillContext) -> list[dict]:
         """Extract functional requirements from input or artifact store."""
         reqs_artifact = context.artifact_store.get_latest(ArtifactType.REQUIREMENTS)
         if reqs_artifact:
@@ -58,10 +56,7 @@ class UserStoryWritingSkill(Skill):
         raw = input_data.get("raw_requirements", "")
         if isinstance(raw, str):
             lines = [line.strip() for line in raw.split("\n") if line.strip()]
-            return [
-                {"id": f"FR-{i:03d}", "description": line, "priority": "medium"}
-                for i, line in enumerate(lines, 1)
-            ]
+            return [{"id": f"FR-{i:03d}", "description": line, "priority": "medium"} for i, line in enumerate(lines, 1)]
         return []
 
     @staticmethod

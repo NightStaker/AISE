@@ -144,11 +144,7 @@ class WhatsAppBridge:
         # Also send via WhatsApp API if configured
         if self.whatsapp_client and self.whatsapp_client.config.is_configured:
             role_tag = _ROLE_EMOJI.get(sender, "")
-            wa_text = (
-                f"{role_tag} {sender}:\n{content}"
-                if role_tag
-                else f"{sender}:\n{content}"
-            )
+            wa_text = f"{role_tag} {sender}:\n{content}" if role_tag else f"{sender}:\n{content}"
             for member in self.group_chat.human_members:
                 if member.phone_number:
                     self.whatsapp_client.send_text_message(member.phone_number, wa_text)
@@ -329,9 +325,7 @@ class WhatsAppBridge:
         self.group_chat._post_system_message(f"{member.display_name} joined the group")
         return member
 
-    def handle_incoming_whatsapp(
-        self, sender_phone: str, body: str, raw: dict | None = None
-    ) -> None:
+    def handle_incoming_whatsapp(self, sender_phone: str, body: str, raw: dict | None = None) -> None:
         """Process an incoming WhatsApp message from a human.
 
         This is called by the webhook server when a real WhatsApp message
