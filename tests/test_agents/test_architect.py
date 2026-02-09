@@ -1,6 +1,6 @@
 """Tests for the Architect agent and skills."""
 
-from aise.core.artifact import ArtifactStore, ArtifactType
+from aise.core.artifact import ArtifactStore
 from aise.core.message import MessageBus
 from aise.agents.architect import ArchitectAgent
 from aise.agents.product_manager import ProductManagerAgent

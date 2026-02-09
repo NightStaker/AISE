@@ -10,7 +10,6 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable
 
-from ..core.message import Message, MessageBus, MessageType
 from ..core.orchestrator import Orchestrator
 from ..core.session import OnDemandSession
 from .bridge import WhatsAppBridge

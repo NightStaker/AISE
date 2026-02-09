@@ -11,9 +11,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from ..core.agent import AgentRole
 from ..core.message import Message, MessageBus, MessageType
-from .client import WhatsAppClient, WhatsAppConfig
+from .client import WhatsAppClient
 from .group import GroupChat, GroupMember, GroupMessage, MemberRole
 
 logger = logging.getLogger(__name__)

@@ -55,8 +55,8 @@ class UserStoryWritingSkill(Skill):
         # Fallback: use raw requirements from input_data
         raw = input_data.get("raw_requirements", "")
         if isinstance(raw, str):
-            lines = [l.strip() for l in raw.split("\n") if l.strip()]
-            return [{"id": f"FR-{i:03d}", "description": l, "priority": "medium"} for i, l in enumerate(lines, 1)]
+            lines = [line.strip() for line in raw.split("\n") if line.strip()]
+            return [{"id": f"FR-{i:03d}", "description": line, "priority": "medium"} for i, line in enumerate(lines, 1)]
         return []
 
     @staticmethod

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...core.artifact import Artifact, ArtifactStatus, ArtifactType
+from ...core.artifact import Artifact, ArtifactType
 from ...core.skill import Skill, SkillContext
 
 

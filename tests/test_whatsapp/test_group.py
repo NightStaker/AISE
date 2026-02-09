@@ -1,7 +1,7 @@
 """Tests for the WhatsApp group chat model."""
 
 import pytest
-from aise.whatsapp.group import GroupChat, GroupMember, GroupMessage, MemberRole
+from aise.whatsapp.group import GroupChat, GroupMember, MemberRole
 
 
 class TestGroupMember:
