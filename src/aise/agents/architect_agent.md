@@ -13,6 +13,8 @@ Owns the design phase. Translates product requirements into system architecture,
 
 Skills 2 and 3 can run in parallel after skill 1. Skill 4 is the review gate.
 
+**Important:** The design phase enforces a minimum of **3 review rounds** between design work and architecture review to ensure design completeness and quality.
+
 ## Artifact Flow
 
 **Produces:** ARCHITECTURE_DESIGN, API_CONTRACT, TECH_STACK, REVIEW_FEEDBACK

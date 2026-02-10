@@ -273,9 +273,13 @@ Given a task description, use these rules to select the correct agent and skill:
 
 ## Review Gates Summary
 
-| Phase | Reviewer | Skill | Target Artifact | Max Iterations |
-|-------|----------|-------|-----------------|----------------|
-| requirements | product_manager | product_review | PRD | 3 |
-| design | architect | architecture_review | ARCHITECTURE_DESIGN | 3 |
-| implementation | developer | code_review | SOURCE_CODE | 3 |
-| testing | qa_engineer | test_review | AUTOMATED_TESTS | 3 |
+| Phase | Reviewer | Skill | Target Artifact | Min Review Rounds | Max Iterations | Requires Tests Pass |
+|-------|----------|-------|-----------------|-------------------|----------------|---------------------|
+| requirements | product_manager | product_review | PRD | 1 | 3 | No |
+| design | architect | architecture_review | ARCHITECTURE_DESIGN | 3 | 3 | No |
+| implementation | developer | code_review | SOURCE_CODE | 3 | 3 | Yes |
+| testing | qa_engineer | test_review | AUTOMATED_TESTS | 1 | 3 | No |
+
+**Notes:**
+- **Min Review Rounds**: The minimum number of review iterations that must occur between the design/implementation work and the review gate approval. Design and Implementation phases require at least 3 rounds.
+- **Requires Tests Pass**: When set, all unit tests must pass before the review gate is reached. This ensures no PR is submitted with failing tests.
