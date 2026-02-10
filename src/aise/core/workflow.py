@@ -171,9 +171,7 @@ class WorkflowEngine:
                         "review_round": round_num,
                     },
                 )
-                rounds.append(
-                    {"round": round_num, "status": "success", "artifact_id": artifact_id}
-                )
+                rounds.append({"round": round_num, "status": "success", "artifact_id": artifact_id})
                 approved = True
             except Exception as e:
                 rounds.append({"round": round_num, "status": "failed", "error": str(e)})
