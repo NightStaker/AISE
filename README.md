@@ -4,7 +4,7 @@ A multi-agent AI system that simulates a complete software development team. Spe
 
 ## Overview
 
-AISE orchestrates five specialized agents, each with distinct skills, through a structured workflow pipeline. Agents communicate via a publish-subscribe message bus and produce versioned artifacts that flow through review gates before advancing to the next phase.
+AISE orchestrates six specialized agents, each with distinct skills, through a structured workflow pipeline. Agents communicate via a publish-subscribe message bus and produce versioned artifacts that flow through review gates before advancing to the next phase. A dedicated Team Manager runs in high-availability demand mode, automatically restarting stuck agents and generating optimisation tasks when idle.
 
 ## Architecture
 
@@ -15,27 +15,37 @@ AISE orchestrates five specialized agents, each with distinct skills, through a 
                            │
               ┌────────────┼────────────┐
               │        MessageBus       │
-              └─┬──┬──┬──┬──┬──────────┘
-                │  │  │  │  │
-    ┌───────────┘  │  │  │  └───────────┐
-    ▼              ▼  │  ▼              ▼
-┌────────┐  ┌─────────┤ ┌─────────┐ ┌────────┐
-│Product │  │Architect│ │Developer│ │  QA    │
-│Manager │  │         │ │         │ │Engineer│
-└────────┘  └─────────┘ └─────────┘ └────────┘
-                         │
-                    ┌────┘
-                    ▼
-               ┌─────────┐
-               │Team Lead│
-               └─────────┘
-                    │
-              ┌─────┴─────┐
-              ▼            ▼
+              └─┬──┬──┬──┬──┬──┬──────┘
+                │  │  │  │  │  │
+    ┌───────────┘  │  │  │  │  └───────────┐
+    ▼              ▼  │  ▼  │              ▼
+┌────────┐  ┌─────────┤ ┌─────────┐  ┌────────┐
+│Product │  │Architect│ │Developer│  │  QA    │
+│Manager │  │         │ │         │  │Engineer│
+└────────┘  └─────────┘ └─────────┘  └────────┘
+                         │  │
+                    ┌────┘  └────┐
+                    ▼            ▼
+               ┌─────────┐ ┌─────────────┐
+               │Team Lead│ │Team Manager │
+               └─────────┘ │ (HA Mode)   │
+                    │       └──────┬──────┘
+              ┌─────┴─────┐       │
+              ▼            ▼      ▼
         ArtifactStore  WorkflowEngine
 ```
 
 ## Features
+
+### High-Availability Team Manager
+
+The Team Manager agent runs in **high-availability demand mode**, continuously supervising the agent team:
+
+- **Health monitoring** — Detects stuck or unresponsive agents by inspecting message-bus history and task statuses.
+- **Automatic restart** — Re-initialises stuck agents and re-queues their pending tasks so the workflow can recover without manual intervention.
+- **Idle optimisation** — When there are no pending requirements, the Team Manager generates architecture and code optimisation tasks to keep the team productive.
+
+The HA cycle runs automatically: health check → restart stuck agents → generate optimisation tasks.
 
 ### WhatsApp Group Chat Integration
 
@@ -107,6 +117,7 @@ GitHub Actions workflow that runs on every pull request and push to `main`:
 | **Developer** | Implementation & code quality | Code Generation, Unit Test Writing, Code Review, Bug Fix |
 | **QA Engineer** | Testing strategy & automation | Test Plan Design, Test Case Design, Test Automation, Test Review |
 | **Team Lead** | Coordination & progress tracking | Task Decomposition, Task Assignment, Conflict Resolution, Progress Tracking |
+| **Team Manager** | High-availability supervision | Agent Health Monitor, Agent Restart, Architecture Optimization, Code Optimization |
 
 ## Workflow Pipeline
 
@@ -119,6 +130,8 @@ Requirements ──► Design ──► Implementation ──► Testing
 ```
 
 Phases advance only after artifacts pass their review gate (up to 3 iterations).
+
+The Team Manager supervises the entire pipeline. If an agent becomes stuck during any phase, the Team Manager detects the failure and restarts the agent automatically. Between phases (or when no requirements are queued), it generates optimisation tasks for the Architect and Developer.
 
 ## Installation
 
@@ -184,13 +197,14 @@ src/aise/
 │   ├── session.py       # OnDemandSession (interactive mode)
 │   ├── skill.py         # Skill base class & SkillContext
 │   └── workflow.py      # Workflow engine, Phase & Task models
-├── agents/              # 5 agent implementations
-├── skills/              # 20 skill implementations (4 per agent)
+├── agents/              # 6 agent implementations
+├── skills/              # 24 skill implementations (4 per agent)
 │   ├── pm/
 │   ├── architect/
 │   ├── developer/
 │   ├── qa/
-│   └── lead/
+│   ├── lead/
+│   └── manager/         # Team Manager skills (HA mode)
 └── whatsapp/            # WhatsApp group chat integration
     ├── client.py        # WhatsApp Business Cloud API client
     ├── group.py         # Group chat model & member management
@@ -227,6 +241,7 @@ ruff format --check src/ tests/
 - **Stateless Skills** — Each skill is a pure function of input artifacts and context, producing output artifacts
 - **Declarative Workflows** — Pipeline phases defined as data structures with dependency tracking
 - **LLM Abstraction** — Provider-agnostic model access allowing heterogeneous agent configurations
+- **High-Availability Mode** — Team Manager continuously monitors agent health, restarts stuck agents, and generates optimisation tasks during idle periods
 
 ## License
 

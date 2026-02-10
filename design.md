@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This system implements a **multi-agent software development team** where specialized AI agents collaborate through a message-passing architecture to deliver the full software development lifecycle. Each agent has defined roles, skills, and responsibilities, and they communicate via a central orchestrator.
+This system implements a **multi-agent software development team** where specialized AI agents collaborate through a message-passing architecture to deliver the full software development lifecycle. Each agent has defined roles, skills, and responsibilities, and they communicate via a central orchestrator. A **Team Manager** agent operates in high-availability demand mode, monitoring agent health, restarting stuck agents, and generating optimisation tasks when the system is idle.
 
 ## 2. Agent Roles & Responsibilities
 
@@ -56,6 +56,35 @@ This system implements a **multi-agent software development team** where special
 | `conflict_resolution` | Mediate disagreements between agents (e.g., design vs. implementation feasibility) |
 | `progress_tracking` | Track overall project status and report progress |
 
+### 2.6 Team Manager Agent (High-Availability Supervisor)
+**Responsibility:** Agent supervision, fault recovery, idle-time optimisation
+
+The Team Manager runs in **high-availability demand mode**. It continuously monitors the agent team and takes corrective action when problems are detected. When no requirements are pending, it shifts to proactive optimisation.
+
+| Skill | Description |
+|-------|-------------|
+| `agent_health_monitor` | Inspect message-bus history and task statuses to detect stuck or unresponsive agents |
+| `agent_restart` | Re-initialise a stuck agent's message-bus subscription and re-queue its pending tasks |
+| `architecture_optimization` | Generate architecture improvement tasks (scalability, security, performance, maintainability) when idle |
+| `code_optimization` | Generate code improvement tasks (test coverage, refactoring, performance, dependencies) when idle |
+
+**HA Cycle:**
+
+```
+┌─────────────────┐     stuck agents?     ┌─────────────────┐
+│  Health Monitor  │──── yes ────────────▶│  Agent Restart   │
+│  (check agents)  │                      │  (re-queue tasks)│
+└────────┬────────┘                      └────────┬────────┘
+         │ no stuck agents                         │
+         ▼                                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              Has pending requirements?                    │
+│  yes → wait for next cycle                               │
+│  no  → generate optimisation tasks                       │
+│        (architecture_optimization + code_optimization)   │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## 3. System Architecture
 
 ```
@@ -85,7 +114,15 @@ This system implements a **multi-agent software development team** where special
 │ -review  │ │ -tech   │ │ -bugfix  │ │  cases   │
 └─────────┘ └─────────┘ └──────────┘ │ -automate│
                                       │ -review  │
-                                      └──────────┘
+       ┌──────────────────────────┐   └──────────┘
+       │   Team Manager (HA)      │
+       │                          │
+       │ Skills:                  │
+       │ -health_monitor          │
+       │ -agent_restart           │◄── monitors all agents
+       │ -arch_optimization       │
+       │ -code_optimization       │
+       └──────────────────────────┘
 ```
 
 ## 4. Communication Model
@@ -112,14 +149,21 @@ Agents produce and consume typed artifacts that flow through the pipeline:
 |---------------|----------|-------------|
 | `Requirements` | Product Manager | Architect, QA |
 | `PRD` | Product Manager | Architect, Team Lead |
-| `ArchitectureDesign` | Architect | Developer, QA |
+| `ArchitectureDesign` | Architect | Developer, QA, Team Manager (optimization) |
 | `APIContract` | Architect | Developer, QA |
-| `SourceCode` | Developer | QA, Architect (review) |
-| `UnitTests` | Developer | QA |
+| `SourceCode` | Developer | QA, Architect (review), Team Manager (optimization) |
+| `UnitTests` | Developer | QA, Team Manager (optimization) |
 | `TestPlan` | QA | Team Lead, Developer |
 | `TestCases` | QA | Developer |
 | `AutomatedTests` | QA | Developer, Team Lead |
 | `ReviewFeedback` | Any reviewer | Original producer |
+| `ProgressReport` | Team Lead, Team Manager | Orchestrator |
+
+### 4.3 Team Manager Communication
+The Team Manager uses the same MessageBus as all other agents. It:
+- **Reads** message history to detect unanswered requests (stuck detection).
+- **Publishes** NOTIFICATION messages when it restarts an agent or generates optimisation tasks.
+- **Responds** to `agent_stuck` notifications from external monitors.
 
 ## 5. Workflow Pipeline
 
@@ -141,11 +185,19 @@ Phase 1: Requirements      Phase 2: Design          Phase 3: Implementation
                                                   │ QA: test automation  │
                                                   │ QA: test review      │
                                                   └──────────────────────┘
+
+Team Manager (runs continuously, independent of phases):
+  ┌─────────────┐    ┌──────────────┐    ┌────────────────────┐
+  │ Health check │──▶│ Restart stuck│──▶│ Generate opt tasks  │
+  │ all agents   │    │ agents       │    │ (if idle)           │
+  └─────────────┘    └──────────────┘    └────────────────────┘
 ```
 
 Each phase includes **review gates** - an agent's output must be approved before proceeding. If review fails, the artifact goes back for revision (max 3 iterations).
 
 **Design and Implementation phases** enforce a minimum of **3 review rounds** between the work and review steps to ensure thorough quality validation. The **Implementation phase** additionally requires that all unit tests pass before the code review gate is reached (i.e., before any PR can be submitted).
+
+The **Team Manager** operates orthogonally to the phase pipeline. It monitors all agents across all phases and can intervene at any point if an agent becomes stuck.
 
 ## 6. Project Structure
 
@@ -173,7 +225,8 @@ AISE/
 │       │   ├── architect.py
 │       │   ├── developer.py
 │       │   ├── qa_engineer.py
-│       │   └── team_lead.py
+│       │   ├── team_lead.py
+│       │   └── team_manager.py     # HA supervisor agent
 │       └── skills/
 │           ├── __init__.py
 │           ├── pm/                 # Product Manager skills
@@ -200,12 +253,18 @@ AISE/
 │           │   ├── test_case_design.py
 │           │   ├── test_automation.py
 │           │   └── test_review.py
-│           └── lead/               # Team Lead skills
+│           ├── lead/               # Team Lead skills
+│           │   ├── __init__.py
+│           │   ├── task_decomposition.py
+│           │   ├── task_assignment.py
+│           │   ├── conflict_resolution.py
+│           │   └── progress_tracking.py
+│           └── manager/            # Team Manager skills (HA)
 │               ├── __init__.py
-│               ├── task_decomposition.py
-│               ├── task_assignment.py
-│               ├── conflict_resolution.py
-│               └── progress_tracking.py
+│               ├── agent_health_monitor.py
+│               ├── agent_restart.py
+│               ├── architecture_optimization.py
+│               └── code_optimization.py
 └── tests/
     ├── __init__.py
     ├── test_core/
@@ -221,7 +280,8 @@ AISE/
         ├── test_architect.py
         ├── test_developer.py
         ├── test_qa_engineer.py
-        └── test_team_lead.py
+        ├── test_team_lead.py
+        └── test_team_manager.py
 ```
 
 ## 7. Key Design Decisions
@@ -232,3 +292,5 @@ AISE/
 4. **Review loops**: Built-in review gates with configurable max iterations prevent infinite loops while ensuring quality.
 5. **Stateless skills**: Skills are pure functions of (input artifacts + context) -> output artifacts, making them testable and composable.
 6. **Configurable workflows**: The pipeline is defined declaratively, allowing different project types to use different phase sequences.
+7. **High-availability supervision**: The Team Manager agent operates independently of the workflow pipeline, continuously monitoring agent health and restarting stuck agents. This ensures the system self-heals without manual intervention.
+8. **Idle-time optimisation**: When no requirements are pending, the Team Manager proactively generates architecture and code optimisation tasks, maximising team productivity during quiet periods.

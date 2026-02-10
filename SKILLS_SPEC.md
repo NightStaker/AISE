@@ -26,6 +26,10 @@ Machine-readable registry of all skills in the AISE multi-agent system. This fil
 | SK-18 | `task_assignment` | team_lead | cross-cutting | `TaskAssignmentSkill` | `aise.skills.lead.task_assignment` |
 | SK-19 | `conflict_resolution` | team_lead | cross-cutting | `ConflictResolutionSkill` | `aise.skills.lead.conflict_resolution` |
 | SK-20 | `progress_tracking` | team_lead | cross-cutting | `ProgressTrackingSkill` | `aise.skills.lead.progress_tracking` |
+| SK-21 | `agent_health_monitor` | team_manager | cross-cutting | `AgentHealthMonitorSkill` | `aise.skills.manager.agent_health_monitor` |
+| SK-22 | `agent_restart` | team_manager | cross-cutting | `AgentRestartSkill` | `aise.skills.manager.agent_restart` |
+| SK-23 | `architecture_optimization` | team_manager | cross-cutting | `ArchitectureOptimizationSkill` | `aise.skills.manager.architecture_optimization` |
+| SK-24 | `code_optimization` | team_manager | cross-cutting | `CodeOptimizationSkill` | `aise.skills.manager.code_optimization` |
 
 ## Artifact Types
 
@@ -44,7 +48,7 @@ Machine-readable registry of all skills in the AISE multi-agent system. This fil
 | `TEST_CASES` | `test_cases` | test_case_design | test_automation, test_review |
 | `AUTOMATED_TESTS` | `automated_tests` | test_automation | test_review |
 | `BUG_REPORT` | `bug_report` | bug_fix | — |
-| `PROGRESS_REPORT` | `progress_report` | task_decomposition, task_assignment, progress_tracking | — |
+| `PROGRESS_REPORT` | `progress_report` | task_decomposition, task_assignment, progress_tracking, agent_health_monitor, agent_restart, architecture_optimization, code_optimization | — |
 
 ## Dependency Graph
 
@@ -73,6 +77,11 @@ task_decomposition            (cross-cutting, no hard dependencies)
   └─► task_assignment         (requires: task list from decomposition)
 conflict_resolution           (requires: REQUIREMENTS — on-demand)
 progress_tracking             (reads all artifact types — on-demand)
+
+agent_health_monitor          (cross-cutting, no hard dependencies — HA mode)
+  └─► agent_restart           (requires: stuck_agents list from health monitor)
+architecture_optimization     (requires: ARCHITECTURE_DESIGN — idle mode)
+code_optimization             (requires: SOURCE_CODE — idle mode)
 ```
 
 ## Workflow Phases
@@ -244,6 +253,36 @@ progress_tracking             (reads all artifact types — on-demand)
 - **Metrics:** per-phase completion %, overall progress, review feedback summary
 - **Dependencies:** none (reads whatever is available)
 
+### SK-21: agent_health_monitor
+
+- **Input:** `{ "agents": dict, "message_history": list, "task_statuses": list }` — agent info, message history, and task statuses
+- **Output artifact:** `PROGRESS_REPORT` — health report with stuck/healthy agent lists
+- **Detection:** Identifies agents with in-progress tasks that have unanswered pending requests
+- **Trigger:** Periodic (HA cycle) or on-demand
+- **Dependencies:** none (cross-cutting)
+
+### SK-22: agent_restart
+
+- **Input:** `{ "stuck_agents": [str], "agent_registry": dict }` — agents to restart and their info
+- **Output artifact:** `PROGRESS_REPORT` — restart results with re-queued task lists
+- **Validation:** `stuck_agents` must be non-empty
+- **Trigger:** After agent_health_monitor detects stuck agents
+- **Dependencies:** agent_health_monitor
+
+### SK-23: architecture_optimization
+
+- **Input:** `{}` — reads ARCHITECTURE_DESIGN from artifact store
+- **Output artifact:** `PROGRESS_REPORT` — optimisation task list (scalability, security, performance, maintainability)
+- **Trigger:** When no pending requirements exist (idle mode)
+- **Dependencies:** system_design (requires ARCHITECTURE_DESIGN)
+
+### SK-24: code_optimization
+
+- **Input:** `{}` — reads SOURCE_CODE, UNIT_TESTS from artifact store
+- **Output artifact:** `PROGRESS_REPORT` — optimisation task list (test coverage, refactoring, performance, dependencies)
+- **Trigger:** When no pending requirements exist (idle mode)
+- **Dependencies:** code_generation (requires SOURCE_CODE)
+
 ## Routing Rules
 
 Given a task description, use these rules to select the correct agent and skill:
@@ -270,6 +309,10 @@ Given a task description, use these rules to select the correct agent and skill:
 | Assign tasks to agents | team_lead | task_assignment |
 | Resolve inter-agent conflicts | team_lead | conflict_resolution |
 | Report project progress | team_lead | progress_tracking |
+| Check agent health / detect stuck agents | team_manager | agent_health_monitor |
+| Restart a stuck agent | team_manager | agent_restart |
+| Generate architecture optimisation tasks | team_manager | architecture_optimization |
+| Generate code optimisation tasks | team_manager | code_optimization |
 
 ## Review Gates Summary
 

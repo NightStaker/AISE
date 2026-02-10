@@ -393,7 +393,7 @@ class TestOnDemandSessionWithFullTeam:
         session = OnDemandSession(orch, project_name="FullTeamTest")
         result = session.handle_input("status")
         assert result["status"] == "ok"
-        assert "5" in result["output"]  # 5 agents
+        assert "6" in result["output"]  # 6 agents
 
     def test_full_team_ask(self):
         orch = create_team()
