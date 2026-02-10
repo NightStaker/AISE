@@ -13,6 +13,8 @@ Owns the implementation phase. Generates source code from architecture designs, 
 
 Skills execute 1→2→3 in sequence. Skill 4 is triggered on-demand when bugs are reported.
 
+**Important:** All generated code **must** pass unit tests before proceeding to code review or PR submission. The workflow engine enforces this via the `require_tests_pass` flag on the implementation phase. Additionally, there are a minimum of **3 review rounds** between implementation and review to ensure code quality.
+
 ## Artifact Flow
 
 **Produces:** SOURCE_CODE, UNIT_TESTS, REVIEW_FEEDBACK, BUG_REPORT

@@ -40,6 +40,7 @@ class ReviewGate:
     reviewer_agent: str
     review_skill: str
     target_artifact_type: str
+    min_review_rounds: int = 1
     max_iterations: int = 3
 
 
@@ -51,6 +52,7 @@ class Phase:
     tasks: list[Task] = field(default_factory=list)
     review_gate: ReviewGate | None = None
     status: PhaseStatus = PhaseStatus.PENDING
+    require_tests_pass: bool = False
 
     def add_task(self, agent: str, skill: str, input_data: dict[str, Any] | None = None) -> Task:
         task = Task(agent=agent, skill=skill, input_data=input_data or {})
@@ -139,26 +141,77 @@ class WorkflowEngine:
     def run_review(self, workflow: Workflow, executor) -> dict[str, Any]:
         """Run the review gate for the current phase.
 
+        Executes at least ``gate.min_review_rounds`` review iterations
+        (up to ``gate.max_iterations``).  Each round invokes the review
+        skill; if the reviewer raises an exception the loop stops early
+        and the review is marked as not approved.
+
         Returns:
-            Dict with review results including 'approved' boolean.
+            Dict with review results including 'approved' boolean,
+            'rounds_completed' count, and per-round details.
         """
         phase = workflow.current_phase
         if phase is None or phase.review_gate is None:
-            return {"approved": True}
+            return {"approved": True, "rounds_completed": 0}
 
         gate = phase.review_gate
+        rounds: list[dict[str, Any]] = []
+        approved = False
+
+        iterations = max(gate.min_review_rounds, 1)
+        iterations = min(iterations, gate.max_iterations)
+
+        for round_num in range(1, iterations + 1):
+            try:
+                artifact_id = executor(
+                    gate.reviewer_agent,
+                    gate.review_skill,
+                    {
+                        "target_artifact_type": gate.target_artifact_type,
+                        "review_round": round_num,
+                    },
+                )
+                rounds.append(
+                    {"round": round_num, "status": "success", "artifact_id": artifact_id}
+                )
+                approved = True
+            except Exception as e:
+                rounds.append({"round": round_num, "status": "failed", "error": str(e)})
+                approved = False
+                break
+
+        if approved:
+            phase.status = PhaseStatus.COMPLETED
+
+        return {
+            "approved": approved,
+            "rounds_completed": len(rounds),
+            "rounds": rounds,
+        }
+
+    def verify_tests_pass(self, workflow: Workflow, executor) -> dict[str, Any]:
+        """Verify that unit tests pass for the current phase.
+
+        Only applies to phases with ``require_tests_pass=True``.
+        Runs the ``unit_test_writing`` skill on the ``developer`` agent
+        and expects it to succeed before the phase can proceed to review.
+
+        Returns:
+            Dict with 'passed' boolean and optional error.
+        """
+        phase = workflow.current_phase
+        if phase is None or not phase.require_tests_pass:
+            return {"passed": True}
+
         try:
             artifact_id = executor(
-                gate.reviewer_agent,
-                gate.review_skill,
-                {
-                    "target_artifact_type": gate.target_artifact_type,
-                },
+                "developer",
+                "unit_test_execution",
+                {"target_artifact_type": "unit_tests"},
             )
-            phase.status = PhaseStatus.COMPLETED
-            return {"approved": True, "artifact_id": artifact_id}
+            return {"passed": True, "artifact_id": artifact_id}
         except Exception as e:
-            return {"approved": False, "error": str(e)}
+            return {"passed": False, "error": str(e)}
 
     @staticmethod
     def create_default_workflow() -> Workflow:
@@ -178,6 +231,7 @@ class WorkflowEngine:
         workflow.add_phase(p1)
 
         # Phase 2: Architecture & Design
+        # Requires at least 3 review rounds between design work and review.
         p2 = Phase(name="design")
         p2.add_task("architect", "system_design")
         p2.add_task("architect", "api_design")
@@ -186,17 +240,21 @@ class WorkflowEngine:
             reviewer_agent="architect",
             review_skill="architecture_review",
             target_artifact_type="architecture_design",
+            min_review_rounds=3,
         )
         workflow.add_phase(p2)
 
         # Phase 3: Implementation
-        p3 = Phase(name="implementation")
+        # Requires at least 3 review rounds between implementation and review.
+        # All code must pass unit tests before proceeding to review / PR.
+        p3 = Phase(name="implementation", require_tests_pass=True)
         p3.add_task("developer", "code_generation")
         p3.add_task("developer", "unit_test_writing")
         p3.review_gate = ReviewGate(
             reviewer_agent="developer",
             review_skill="code_review",
             target_artifact_type="source_code",
+            min_review_rounds=3,
         )
         workflow.add_phase(p3)
 

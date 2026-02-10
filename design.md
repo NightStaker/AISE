@@ -145,6 +145,8 @@ Phase 1: Requirements      Phase 2: Design          Phase 3: Implementation
 
 Each phase includes **review gates** - an agent's output must be approved before proceeding. If review fails, the artifact goes back for revision (max 3 iterations).
 
+**Design and Implementation phases** enforce a minimum of **3 review rounds** between the work and review steps to ensure thorough quality validation. The **Implementation phase** additionally requires that all unit tests pass before the code review gate is reached (i.e., before any PR can be submitted).
+
 ## 6. Project Structure
 
 ```
