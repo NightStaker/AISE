@@ -22,6 +22,12 @@ from .lead import (
     TaskAssignmentSkill,
     TaskDecompositionSkill,
 )
+from .manager import (
+    AgentHealthMonitorSkill,
+    AgentRestartSkill,
+    ArchitectureOptimizationSkill,
+    CodeOptimizationSkill,
+)
 from .pm import (
     ProductDesignSkill,
     ProductReviewSkill,
@@ -61,6 +67,11 @@ __all__ = [
     "TaskAssignmentSkill",
     "ConflictResolutionSkill",
     "ProgressTrackingSkill",
+    # Manager
+    "AgentHealthMonitorSkill",
+    "AgentRestartSkill",
+    "ArchitectureOptimizationSkill",
+    "CodeOptimizationSkill",
     # GitHub
     "PRReviewSkill",
     "PRMergeSkill",

@@ -20,7 +20,7 @@ class TestWhatsAppGroupSession:
         session = _make_session()
         assert session.project_name == "Test Project"
         assert not session.is_running
-        assert len(session.group_chat.agent_members) == 5
+        assert len(session.group_chat.agent_members) == 6
 
     def test_agents_registered_in_group(self):
         session = _make_session()
@@ -57,8 +57,8 @@ class TestWhatsAppGroupSession:
         session = _make_session()
         session.add_human("Alice", "123")
         info = session.group_chat.get_info()
-        assert info["member_count"] == 6  # 5 agents + 1 human
-        assert len(info["agents"]) == 5
+        assert info["member_count"] == 7  # 6 agents + 1 human
+        assert len(info["agents"]) == 6
         assert len(info["humans"]) == 1
 
     def test_slash_command_members(self):

@@ -91,6 +91,7 @@ class ProjectConfig:
             "developer": AgentConfig(name="developer"),
             "qa_engineer": AgentConfig(name="qa_engineer"),
             "team_lead": AgentConfig(name="team_lead"),
+            "team_manager": AgentConfig(name="team_manager"),
         }
     )
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)

@@ -13,6 +13,7 @@ from .agents import (
     ProductManagerAgent,
     QAEngineerAgent,
     TeamLeadAgent,
+    TeamManagerAgent,
 )
 from .config import ProjectConfig
 from .core.orchestrator import Orchestrator
@@ -39,6 +40,7 @@ def create_team(config: ProjectConfig | None = None) -> Orchestrator:
         DeveloperAgent(bus, store, config.get_model_config("developer")),
         QAEngineerAgent(bus, store, config.get_model_config("qa_engineer")),
         TeamLeadAgent(bus, store, config.get_model_config("team_lead")),
+        TeamManagerAgent(bus, store, config.get_model_config("team_manager")),
     ]
 
     for agent in agents:
