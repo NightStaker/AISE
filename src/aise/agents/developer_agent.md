@@ -1,95 +1,55 @@
-# Agent: Developer
+# Developer Agent
 
-## Overview
+**Role:** `DEVELOPER` | **Module:** `aise.agents.developer` | **Phase:** Implementation
 
-| Field | Value |
-|-------|-------|
-| **Name** | `developer` |
-| **Class** | `DeveloperAgent` |
-| **Module** | `aise.agents.developer` |
-| **Role** | `AgentRole.DEVELOPER` |
-| **Description** | Agent responsible for code implementation, testing, and bug fixing |
-
-## Purpose
-
-The Developer agent owns the implementation phase of the development workflow. It generates source code from architecture and API designs, writes unit tests, reviews code quality, and fixes bugs from reports or failing tests.
+Owns the implementation phase. Generates source code from architecture designs, writes unit tests, reviews code quality, and fixes bugs.
 
 ## Skills
 
-| Skill Name | Class | Description |
-|------------|-------|-------------|
-| `code_generation` | `CodeGenerationSkill` | Generate source code from architecture design and API contracts |
-| `unit_test_writing` | `UnitTestWritingSkill` | Generate unit tests with edge-case coverage |
-| `code_review` | `CodeReviewSkill` | Review code for correctness, style, security, and performance |
-| `bug_fix` | `BugFixSkill` | Analyze bug reports or failing tests and produce fixes |
+1. `code_generation` → `SOURCE_CODE` — generate module scaffolding (models, routes, services)
+2. `unit_test_writing` → `UNIT_TESTS` — generate test suites per module
+3. `code_review` → `REVIEW_FEEDBACK` — review quality, security, coverage **(review gate)**
+4. `bug_fix` → `BUG_REPORT` — fix bugs with root cause analysis **(on-demand)**
 
-## Workflow Phase
+Skills execute 1→2→3 in sequence. Skill 4 is triggered on-demand when bugs are reported.
 
-**Primary Phase:** Implementation
+## Artifact Flow
 
-### Execution Order
-1. `code_generation` — Generate module scaffolding from architecture
-2. `unit_test_writing` — Generate test suites for each module
-3. `code_review` — Review code quality and test coverage (review gate)
-4. `bug_fix` — Fix issues found during review or testing (on demand)
+**Produces:** SOURCE_CODE, UNIT_TESTS, REVIEW_FEEDBACK, BUG_REPORT
+**Consumes from upstream:** ARCHITECTURE_DESIGN, API_CONTRACT, TECH_STACK (from Architect)
 
-## Artifacts Produced
+**Internal dependencies:**
+- unit_test_writing reads SOURCE_CODE
+- code_review reads SOURCE_CODE + UNIT_TESTS
+- bug_fix reads SOURCE_CODE
 
-| Artifact Type | Skill | Description |
-|---------------|-------|-------------|
-| `SOURCE_CODE` | `code_generation` | Module files (models, routes, services) |
-| `UNIT_TESTS` | `unit_test_writing` | Test suites per module |
-| `REVIEW_FEEDBACK` | `code_review` | Code quality review results |
-| `BUG_REPORT` | `bug_fix` | Bug fix records with root cause analysis |
+## Upstream / Downstream
 
-## Artifacts Consumed
+- **Upstream:** Architect → ARCHITECTURE_DESIGN, API_CONTRACT, TECH_STACK
+- **Downstream:** QA Engineer consumes SOURCE_CODE indirectly via architecture_review alignment
 
-| Artifact Type | By Skill | Purpose |
-|---------------|----------|---------|
-| `ARCHITECTURE_DESIGN` | `code_generation` | Service components to generate |
-| `API_CONTRACT` | `code_generation` | Endpoints for route generation |
-| `TECH_STACK` | `code_generation` | Language and framework selection |
-| `SOURCE_CODE` | `unit_test_writing`, `code_review`, `bug_fix` | Code to test/review/fix |
-| `UNIT_TESTS` | `code_review` | Check test coverage |
+## Supported Outputs
 
-## Communication
+Code generation supports Python/FastAPI and Go/Gin. Per-component structure:
+- `app/{module}/models.py` — data models
+- `app/{module}/routes.py` — API routes
+- `app/{module}/service.py` — business logic
+- `app/main.py` — application entry point
 
-### Messages Received
-- `REQUEST` with `skill` field matching any registered skill name
-- Responds with `RESPONSE` containing `status` and `artifact_id`
-
-### Messages Sent
-- Can request skills from other agents via `request_skill()`
-
-## Integration Points
-
-### Upstream Agents
-- **Architect** — consumes `ARCHITECTURE_DESIGN`, `API_CONTRACT`, `TECH_STACK`
-
-### Downstream Agents
-- **QA Engineer** — consumes `SOURCE_CODE` indirectly (architecture review checks alignment)
-
-### Review Gates
-- `code_review` serves as the review gate for the implementation phase
-- Sets source code status to `APPROVED` or `REJECTED`
-- Checks for security vulnerabilities, style issues, and test coverage gaps
-
-## Usage
+## Quick Reference
 
 ```python
-from aise.core.message import MessageBus
-from aise.core.artifact import ArtifactStore
 from aise.agents.developer import DeveloperAgent
 
-bus = MessageBus()
-store = ArtifactStore()
 dev = DeveloperAgent(bus, store)
 
-# Generate code
-artifact = dev.execute_skill("code_generation", {}, project_name="My Project")
+# Architect artifacts must exist in store
+dev.execute_skill("code_generation", {}, project_name="MyProject")
+dev.execute_skill("unit_test_writing", {}, project_name="MyProject")
+dev.execute_skill("code_review", {}, project_name="MyProject")
 
-# Fix bugs
-artifact = dev.execute_skill("bug_fix", {
+# On-demand bug fixing
+dev.execute_skill("bug_fix", {
     "bug_reports": [{"id": "BUG-001", "description": "Login fails on empty password"}]
-}, project_name="My Project")
+}, project_name="MyProject")
 ```
